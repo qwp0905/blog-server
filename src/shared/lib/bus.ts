@@ -15,10 +15,11 @@ export class CommandBus {
   }
 
   async execute<T extends ICommand>(command: T) {
-    if (!this.handlers.has(command.key)) {
+    const handler = this.handlers.get(command.key)
+    if (handler) {
       throw new Error('register handler')
     }
-    const handler = this.handlers.get(command.key)
+
     return await handler.execute(command.context)
   }
 }
@@ -37,11 +38,11 @@ export class QueryBus {
   }
 
   async execute<T extends IQuery>(query: T) {
-    if (!this.handlers.has(query.key)) {
+    const handler = this.handlers.get(query.key)
+    if (!handler) {
       throw new Error('register handler')
     }
 
-    const handler = this.handlers.get(query.key)
     return await handler.execute(query.context)
   }
 }
