@@ -1,6 +1,6 @@
 import { RequestHandler, Router } from 'express'
 import * as passport from 'passport'
-import { Role } from '../@types/account.type'
+import { Role } from '../@types/account'
 import { jwtStrategy } from '../container'
 import { IAccount, IAccountProperties } from '../modules/account/domain/account'
 

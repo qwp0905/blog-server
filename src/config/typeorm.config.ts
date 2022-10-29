@@ -1,4 +1,3 @@
-import { DataSource } from 'typeorm'
 import { DataSourceOptions } from 'typeorm'
 
 export const TypeOrmConfig: DataSourceOptions = {
@@ -12,5 +11,3 @@ export const TypeOrmConfig: DataSourceOptions = {
   entitySkipConstructor: true,
   synchronize: false
 }
-
-export const DATABASE = new DataSource(TypeOrmConfig)

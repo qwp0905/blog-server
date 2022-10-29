@@ -1,5 +1,5 @@
 import { S3 } from 'aws-sdk'
-import path from 'path'
+import * as path from 'path'
 
 export class AwsS3Service {
   constructor(private readonly s3: S3) {}

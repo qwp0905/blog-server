@@ -8,3 +8,4 @@ dist
 .prettierrc
 .eslintrc.js
 test
+coverage

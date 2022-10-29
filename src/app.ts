@@ -1,12 +1,11 @@
 import * as express from 'express'
-import { DATABASE } from './database/dataSource'
-import { REDIS_CACHE } from './database/redis'
 import { IController } from './shared/interfaces/controller.interface'
 import * as cookieParser from 'cookie-parser'
 import * as cors from 'cors'
 import helmet from 'helmet'
 import * as morgan from 'morgan'
 import { ErrorMiddleWare } from './middlewares/error.middleware'
+import { DATABASE, REDIS_CACHE } from './container'
 
 export class App {
   private app: express.Application

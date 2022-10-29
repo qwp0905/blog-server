@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt'
-import { Role } from '../../../@types/account.type'
+import { Role } from '../../../@types/account'
 import {
   Http400Exception,
   Http403Exception,

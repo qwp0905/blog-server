@@ -13,8 +13,8 @@ const bootstrap = async () => {
 
   app.initializeMiddleWares()
 
-  const Container = await import('./container')
-  app.initializeControllers(Container.default)
+  const Container = (await import('./container')).default
+  app.initializeControllers(Container)
 
   app.initializeErrorMiddleware()
 

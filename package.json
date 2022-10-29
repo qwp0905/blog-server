@@ -5,7 +5,10 @@
   "scripts": {
     "start": "ts-node src/main.ts",
     "build": "rimraf dist && tsc --build tsconfig.json",
-    "dev": "cross-env NODE_ENV=development nodemon --watch '**/*' --ext 'ts,json' --ignore'**/*.spec.ts' --exec 'ts-node src/main.ts'"
+    "dev": "cross-env NODE_ENV=development nodemon --watch '**/*' --ext 'ts,json' --ignore'**/*.spec.ts' --exec 'ts-node src/main.ts'",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
   },
   "repository": {
     "type": "git",

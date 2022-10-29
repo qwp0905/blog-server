@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { Role } from '../../../../@types/account.type'
+import { Role } from '../../../../@types/account'
 import { ArticleEntity } from '../../../article/infrastructure/entities/article.entity'
 import { HeartEntity } from '../../../heart/infrastructure/entities/heart.entity'
 

@@ -1,9 +1,12 @@
+import { S3 } from 'aws-sdk'
+import IORedis from 'ioredis'
+import { DataSource } from 'typeorm'
 import { GenerateTokenHandler } from './auth/command/generate-token.handler'
 import { JwtService } from './auth/jwt.service'
 import { JwtStrategy } from './auth/strategies/jwt.strategy'
-import { AWS_S3 } from './database/aws'
-import { DATABASE } from './database/dataSource'
-import { REDIS_CACHE } from './database/redis'
+import { AwsS3Config } from './config/aws.config'
+import { RedisCacheConfig } from './config/redis.config'
+import { TypeOrmConfig } from './config/typeorm.config'
 import { RedisService } from './external/redis.service'
 import { AwsS3Service } from './external/s3.service'
 import { CreateAccountHandler } from './modules/account/application/command/create-account/create-account.handler'
@@ -46,12 +49,17 @@ import { UploadController } from './modules/upload/interface/upload.controller'
 import { IController } from './shared/interfaces/controller.interface'
 import { CommandBus, QueryBus } from './shared/lib/bus'
 
+// External ###############################################################
+export const DATABASE = new DataSource(TypeOrmConfig)
+export const REDIS_CACHE = new IORedis(RedisCacheConfig)
+export const AWS_S3 = new S3(AwsS3Config)
+
 // Bus ###############################################################
 const commandBus = new CommandBus()
 
 const queryBus = new QueryBus()
 
-// External ###############################################################
+// External modules ###############################################################
 const redisService = new RedisService(REDIS_CACHE)
 
 const s3Service = new AwsS3Service(AWS_S3)

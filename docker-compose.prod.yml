@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  proxy:
+    image: qwp1216/blog-server-proxy
+    ports:
+      - 443:443
+
+  web-server:
+    depends_on:
+      - redis
+    image: qwp1216/blog-server
+    ports:
+      - 3001:3001
+    container_name: web-server
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis-data:/data

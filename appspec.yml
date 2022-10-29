@@ -1,0 +1,10 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/www
+
+hooks:
+  AfterInstall:
+    - location: ./deploy/AfterInstall.sh
+      runas: root
