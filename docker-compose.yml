@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  web-server:
+    depends_on:
+      - redis_server
+      - postgres_server
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3001:3001
+    container_name: web-server
+    volumes:
+      - ./src:/app/src
+    environment:
+      - REDIS_HOST=redis_server
+      - DATABASE_HOST=postgres_server
+
+  redis_server:
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/data
+
+  postgres_server:
+    image: postgres:14
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres14-data:/var/lib/postgresql/data
+
+volumes:
+  postgres14-data:
+    external: true
+  redis-data:
+    external: true
