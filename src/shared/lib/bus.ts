@@ -16,7 +16,7 @@ export class CommandBus {
 
   async execute<T extends ICommand>(command: T) {
     const handler = this.handlers.get(command.key)
-    if (handler) {
+    if (!handler) {
       throw new Error('register handler')
     }
 
