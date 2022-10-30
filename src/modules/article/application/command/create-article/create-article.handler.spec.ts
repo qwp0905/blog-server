@@ -3,7 +3,7 @@ import { IArticle } from '../../../domain/article'
 import { ArticleFactory } from '../../../domain/article.factory'
 import { IArticleRepository } from '../../../domain/article.repository.interface'
 import { CreateArticleCommand, ICreateArticleCommand } from './create-article.command'
-import { CreateArticleHandler } from './create-artlcie.handler'
+import { CreateArticleHandler } from './create-article.handler'
 
 const mockArticleRepository = () => ({
   insertOne: jest.fn()
