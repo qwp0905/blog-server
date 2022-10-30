@@ -1,7 +1,7 @@
 import { ICommand } from '../../../../../shared/interfaces/command'
 
 export interface IFindAccountCommand {
-  id: number
+  readonly id: number
 }
 
 export const FIND_ACCOUNT = 'find-account'

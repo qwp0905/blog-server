@@ -24,7 +24,7 @@ describe('Account-CreateAccount', () => {
   let accountRepository: Mock<IAccountRepository>
   let accountFactory: Mock<AccountFactory>
 
-  beforeEach(async () => {
+  beforeEach(() => {
     accountRepository = mockAccountRepository()
     accountFactory = mockAccountFactory()
 

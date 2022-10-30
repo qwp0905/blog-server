@@ -3,7 +3,7 @@ export interface ICommand {
   readonly context: any
 }
 
-export abstract class ICommandResult {}
+export interface ICommandResult {}
 
 export interface ICommandHandler<
   Command extends ICommand = any,

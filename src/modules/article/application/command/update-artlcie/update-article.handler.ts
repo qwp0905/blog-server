@@ -5,7 +5,7 @@ import {
   IUpdateArticleCommand,
   UpdateArticleCommand,
   UPDATE_ARTICLE
-} from './update-artlcie.command'
+} from './update-article.command'
 
 export class UpdateArticleHandler implements ICommandHandler<UpdateArticleCommand> {
   readonly key = UPDATE_ARTICLE

@@ -3,7 +3,7 @@ export interface IQuery {
   readonly context: any
 }
 
-export abstract class IQueryResult {}
+export interface IQueryResult {}
 
 export interface IQueryHandler<
   Query extends IQuery = any,

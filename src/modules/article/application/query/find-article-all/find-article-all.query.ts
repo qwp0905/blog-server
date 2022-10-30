@@ -1,9 +1,9 @@
 import { IQuery } from '../../../../../shared/interfaces/query'
 
 export interface IFindArticleAllQuery {
-  page: number
-  tag?: string
-  account_id?: number
+  readonly page: number
+  readonly tag?: string
+  readonly account_id?: number
 }
 
 export const FIND_ARTICLE_ALL = 'find-article-all'

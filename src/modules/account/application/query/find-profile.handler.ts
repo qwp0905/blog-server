@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm'
 import { IQueryHandler } from '../../../../shared/interfaces/query'
 import { ArticleEntity } from '../../../article/infrastructure/entities/article.entity'
+import { AccountEntity } from '../../infrastructure/entities/account.entity'
 import {
   FindProfileQuery,
   FindProfileResult,
@@ -29,7 +30,7 @@ export class FindProfileHandler
             .where('account_id = A.id'),
         'articles'
       )
-      .from('account', 'A')
+      .from(AccountEntity, 'A')
       .where('id = :id', { id })
       .getRawOne()
 

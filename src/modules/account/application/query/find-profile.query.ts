@@ -1,7 +1,7 @@
 import { IQuery, IQueryResult } from '../../../../shared/interfaces/query'
 
 export interface IFindProfileQuery {
-  id: number
+  readonly id: number
 }
 
 export const FIND_PROFILE = 'find-profile'

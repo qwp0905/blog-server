@@ -2,7 +2,7 @@ import { ICommand } from '../../../../../shared/interfaces/command'
 import { IAccount } from '../../../domain/account'
 
 export interface ILogoutCommand {
-  account: IAccount
+  readonly account: IAccount
 }
 
 export const LOGOUT = 'logout'

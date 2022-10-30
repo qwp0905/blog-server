@@ -1,7 +1,7 @@
 import { ICommand } from '../../../shared/interfaces/command'
 
 export interface IUploadCommand {
-  image: Express.Multer.File
+  readonly image: Express.Multer.File
 }
 
 export const UPLOAD_IMAGE = 'upload-image'

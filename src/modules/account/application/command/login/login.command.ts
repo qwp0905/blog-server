@@ -1,8 +1,8 @@
 import { ICommand, ICommandResult } from '../../../../../shared/interfaces/command'
 
 export interface ILoginCommand {
-  email: string
-  password: string
+  readonly email: string
+  readonly password: string
 }
 
 export const LOGIN = 'login'

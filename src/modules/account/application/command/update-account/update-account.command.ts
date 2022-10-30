@@ -2,10 +2,10 @@ import { ICommand } from '../../../../../shared/interfaces/command'
 import { IAccount } from '../../../domain/account'
 
 export interface IUpdateAccountCommand {
-  account: IAccount
-  nickname?: string
-  password?: string
-  introduction?: string
+  readonly account: IAccount
+  readonly nickname?: string
+  readonly password?: string
+  readonly introduction?: string
 }
 
 export const UPDATE_ACCOUNT = 'update-account'

@@ -1,7 +1,7 @@
 import { IQuery } from '../../../../../shared/interfaces/query'
 
 export interface IFindTagsQuery {
-  account_id?: number
+  readonly account_id?: number
 }
 
 export const FIND_TAGS = 'find-tags'

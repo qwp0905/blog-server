@@ -2,7 +2,7 @@ import { ICommand } from '../../../../../shared/interfaces/command'
 import { IAccount } from '../../../domain/account'
 
 export interface IRefreshTokenCommand {
-  account: IAccount
+  readonly account: IAccount
 }
 
 export const REFRESH_TOKEN = 'refresh-token'

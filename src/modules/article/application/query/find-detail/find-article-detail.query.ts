@@ -1,7 +1,7 @@
 import { IQuery, IQueryResult } from '../../../../../shared/interfaces/query'
 
 export interface IFindArticleDetailQuery {
-  article_id: number
+  readonly article_id: number
 }
 
 export const FIND_ARTICLE_DETAIL = 'find-article-detail'

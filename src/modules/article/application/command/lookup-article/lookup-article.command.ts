@@ -1,8 +1,8 @@
 import { ICommand } from '../../../../../shared/interfaces/command'
 
 export interface ILookupArticleCommand {
-  article_id: number
-  account_id: number
+  readonly article_id: number
+  readonly account_id: number
 }
 
 export const LOOKUP_ARTICLE = 'lookup-article'
