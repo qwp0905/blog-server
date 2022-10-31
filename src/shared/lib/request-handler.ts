@@ -3,8 +3,8 @@ import { DateFormat } from '../utils/date'
 
 export type Handler = (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res?: Response,
+  next?: NextFunction
 ) => any | Promise<any>
 
 export const Wrap =

@@ -11,7 +11,7 @@ export class FindCommentQuery implements ICommand {
   readonly key = FIND_COMMENT
   readonly context: IFindCommentQuery
 
-  constructor(readonly article_id: number, readonly page = 1) {
+  constructor(article_id: number, page = 1) {
     this.context = { article_id, page }
   }
 }

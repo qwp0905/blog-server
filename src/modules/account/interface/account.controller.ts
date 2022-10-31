@@ -37,23 +37,23 @@ export class AccountController implements IController {
     this.router.use(this.path, router)
   }
 
-  private create: Handler = async (req): Promise<void> => {
+  create: Handler = async (req): Promise<void> => {
     const { email, password, nickname }: CreateAccountDto = req.body
 
-    if (!email) {
+    if (!email || typeof email !== 'string') {
       throw new Http400Exception('이메일은 필수입니다.')
     }
-    if (!password) {
+    if (!password || typeof password !== 'string') {
       throw new Http400Exception('패스워드는 필수입니다.')
     }
-    if (!nickname) {
+    if (!nickname || typeof nickname !== 'string') {
       throw new Http400Exception('닉네임은 필수입니다.')
     }
     const command = new CreateAccountCommand(email, password, nickname)
     await this.commandBus.execute(command)
   }
 
-  private login: Handler = async (req): Promise<LoginResponse> => {
+  login: Handler = async (req): Promise<LoginResponse> => {
     const { email, password }: LoginDto = req.body
 
     if (!email) {
@@ -68,14 +68,14 @@ export class AccountController implements IController {
     return await this.commandBus.execute(command)
   }
 
-  private logout: Handler = async (req): Promise<void> => {
+  logout: Handler = async (req): Promise<void> => {
     const account = req.user as IAccount
 
     const command = new LogoutCommand(account)
     await this.commandBus.execute(command)
   }
 
-  private update: Handler = async (req): Promise<void> => {
+  update: Handler = async (req): Promise<void> => {
     const account = req.user as IAccount
     const { nickname, password, introduction }: UpdateAccountDto = req.body
 
@@ -83,14 +83,14 @@ export class AccountController implements IController {
     await this.commandBus.execute(command)
   }
 
-  private refresh: Handler = async (req): Promise<string> => {
+  refresh: Handler = async (req): Promise<string> => {
     const account = req.user as IAccount
 
     const command = new RefreshTokenCommand(account)
     return await this.commandBus.execute(command)
   }
 
-  private findProfile: Handler = async (req): Promise<FindProfileResponse> => {
+  findProfile: Handler = async (req): Promise<FindProfileResponse> => {
     const id = +req.params.id
 
     if (id !== 0 && !id) {
