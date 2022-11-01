@@ -112,7 +112,7 @@ describe('Account-Controller', () => {
     })
   })
 
-  describe('2. findProfile TEST', () => {
+  describe('6. findProfile TEST', () => {
     let request: Request
     let query: FindProfileQuery
 

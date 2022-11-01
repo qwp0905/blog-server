@@ -48,6 +48,7 @@ import { AmazonAdapter } from './modules/upload/infrastructure/amazon.adapter'
 import { UploadController } from './modules/upload/interface/upload.controller'
 import { IController } from './shared/interfaces/controller.interface'
 import { CommandBus, QueryBus } from './shared/lib/bus'
+import { Validator } from './shared/lib/validator'
 
 // External ###############################################################
 export const DATABASE = new DataSource(TypeOrmConfig)
@@ -58,6 +59,9 @@ export const AWS_S3 = new S3(AwsS3Config)
 const commandBus = new CommandBus()
 
 const queryBus = new QueryBus()
+
+// Utils ###############################################################
+const validator = new Validator()
 
 // External modules ###############################################################
 const redisService = new RedisService(REDIS_CACHE)
