@@ -1,5 +1,5 @@
 import { Mock } from '../../../../@types/test'
-import { RedisService } from '../../../../external/redis.service'
+import { RedisService } from '../../../../external/redis/redis.service'
 import { IRedisAdapter } from '../../interface/adapter/redis.adapter.interface'
 import { RedisAdapter } from './redis.adapter'
 
@@ -18,19 +18,19 @@ describe('Article-RedisAdapter', () => {
     adapter = new RedisAdapter(redisService as unknown as RedisService)
   })
 
-  describe('1. isExists TEST', () => {
+  describe('1. lookupExists TEST', () => {
     it('test', async () => {
       redisService.getCache.mockResolvedValue(true)
 
-      const result = adapter.isExists(123, 456)
+      const result = adapter.lookupExists(123, 456)
       await expect(result).resolves.toBe(true)
       expect(redisService.getCache).toBeCalledWith(`123-456`)
     })
   })
 
-  describe('2. set TEST', () => {
+  describe('2. setLookup TEST', () => {
     it('test', async () => {
-      const result = adapter.set(123, 456)
+      const result = adapter.setLookup(123, 456)
       await expect(result).resolves.toBeUndefined()
       expect(redisService.setCache).toBeCalledWith('123-456', true, 1000 * 60 * 60 * 24)
     })

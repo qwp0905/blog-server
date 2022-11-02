@@ -15,12 +15,12 @@ export class LookupArticleHandler implements ICommandHandler<LookupArticleComman
   ) {}
 
   async execute({ article_id, account_id }: ILookupArticleCommand): Promise<void> {
-    const is_exists = await this.redisAdapter.isExists(account_id, article_id)
+    const is_exists = await this.redisAdapter.lookupExists(account_id, article_id)
 
     if (!is_exists) {
       await this.articleRepository.updateViewsById(article_id)
 
-      await this.redisAdapter.set(account_id, article_id)
+      await this.redisAdapter.setLookup(account_id, article_id)
     }
   }
 }

@@ -1,5 +1,5 @@
 import { PutObjectAclRequest } from 'aws-sdk/clients/s3'
-import { AwsS3Service } from '../../../external/s3.service'
+import { AwsS3Service } from '../../../external/aws/s3.service'
 import { IAmazonAdapter } from '../interface/adapter/amazon.adapter.interface'
 
 export class AmazonAdapter implements IAmazonAdapter {

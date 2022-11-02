@@ -103,7 +103,11 @@ export class Validator {
   }
 
   exists<T>(param: T): T {
-    if (!param) {
+    if (
+      param === undefined ||
+      param === null ||
+      (typeof param === 'number' && isNaN(param))
+    ) {
       throw new Http400Exception(`${param} must be exists`)
     }
     return param

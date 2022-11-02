@@ -252,4 +252,19 @@ describe('Validator', () => {
       expect(validator.numberArray).toBeCalledWith([1, 2, 3], 5)
     })
   })
+
+  describe('14. exists TEST', () => {
+    it('1. falsy', () => {
+      expect(() => validator.exists(undefined)).toThrowError()
+      expect(() => validator.exists(null)).toThrowError()
+      expect(() => validator.exists(NaN)).toThrowError()
+    })
+
+    it('2. 정상', () => {
+      expect(validator.exists(123)).toEqual(123)
+      expect(validator.exists({ 123: 123 })).toEqual({ 123: 123 })
+      expect(validator.exists([])).toEqual([])
+      expect(validator.exists('122')).toEqual('122')
+    })
+  })
 })
