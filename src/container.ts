@@ -165,11 +165,11 @@ const uploadHandler = new UploadHandler(upload_amazonAdapter)
 const uploadCommandHandlers = [uploadHandler]
 
 // Controllers ###############################################################
-const accountController = new AccountController(commandBus, queryBus)
-const articleController = new ArticleController(commandBus, queryBus)
-const commentController = new CommentController(commandBus, queryBus)
-const heartController = new HeartController(commandBus, queryBus)
-const uploadController = new UploadController(commandBus)
+const accountController = new AccountController(commandBus, queryBus, validator)
+const articleController = new ArticleController(commandBus, queryBus, validator)
+const commentController = new CommentController(commandBus, queryBus, validator)
+const heartController = new HeartController(commandBus, queryBus, validator)
+const uploadController = new UploadController(commandBus, validator)
 
 // Register Handlers ###############################################################
 commandBus.registerHandlers([

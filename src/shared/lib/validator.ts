@@ -9,8 +9,8 @@ export class Validator {
   }
 
   stringOptional(param?: unknown): string | undefined {
-    if (param === undefined) {
-      return param
+    if (param === undefined || param === null) {
+      return
     }
     return this.string(param)
   }
@@ -23,8 +23,8 @@ export class Validator {
   }
 
   numberOptional(param?: unknown): number | undefined {
-    if (param === undefined) {
-      return param
+    if (param === undefined || param === null) {
+      return
     }
     return this.number(param)
   }
@@ -34,8 +34,8 @@ export class Validator {
   }
 
   numberOptionalPipe(param?: unknown): number | undefined {
-    if (param === undefined) {
-      return param
+    if (param === undefined || param === null) {
+      return
     }
     return this.numberPipe(param)
   }
@@ -47,7 +47,7 @@ export class Validator {
     return param
   }
 
-  enum(list: string[], param?: unknown): string {
+  enum(param: unknown, list: string[]): string {
     if (!param || typeof param !== 'string') {
       throw new Http400Exception(`${param} must be enum ${list.join(',')}`)
     }
@@ -58,22 +58,54 @@ export class Validator {
     return param
   }
 
-  array(param?: unknown, length?: number): unknown[] {
+  array(param?: unknown, max_length?: number): unknown[] {
     if (!Array.isArray(param)) {
-      throw new Http400Exception(`${param} must be string array`)
+      throw new Http400Exception(`${param} must be array`)
     }
 
-    if (length ?? length !== param.length) {
-      throw new Http400Exception(`${param} must be string array`)
+    if (max_length ?? max_length < param.length) {
+      throw new Http400Exception(`${param} must be shorter than ${max_length}`)
+    }
+
+    if (!param.length) {
+      throw new Http400Exception(`${param} must be none empty`)
     }
     return param
   }
 
-  stringArray(param?: unknown, length?: number): string[] {
-    return this.array(param, length).map((e) => this.string(e))
+  arrayOptional(param?: unknown, max_length?: number): unknown[] | undefined {
+    if (param === undefined || param === null) {
+      return
+    }
+    return this.array(param, max_length)
   }
 
-  numberArray(param?: unknown, length?: number): number[] {
-    return this.array(param, length).map((e) => this.number(e))
+  stringArray(param?: unknown, max_length?: number): string[] {
+    return this.array(param, max_length).map((e) => this.string(e))
+  }
+
+  stringArrayOptional(param?: unknown, max_length?: number): string[] | undefined {
+    if (param === undefined || param === null) {
+      return
+    }
+    return this.stringArray(param, max_length)
+  }
+
+  numberArray(param?: unknown, max_length?: number): number[] {
+    return this.array(param, max_length).map((e) => this.number(e))
+  }
+
+  numberArrayOptional(param?: unknown, max_length?: number): number[] | undefined {
+    if (param === undefined || param === null) {
+      return
+    }
+    return this.numberArray(param, max_length)
+  }
+
+  exists<T>(param: T): T {
+    if (!param) {
+      throw new Http400Exception(`${param} must be exists`)
+    }
+    return param
   }
 }

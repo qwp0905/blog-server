@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import { Http400Exception } from '../../../shared/lib/http.exception'
 import { IController } from '../../../shared/interfaces/controller.interface'
 import { CommandBus, QueryBus } from '../../../shared/lib/bus'
 import { Handler, Wrap } from '../../../shared/lib/request-handler'
@@ -15,6 +14,7 @@ import { UpdateAccountCommand } from '../application/command/update-account/upda
 import { RefreshTokenCommand } from '../application/command/refresh-token/refresh-token.command'
 import { FindProfileQuery } from '../application/query/find-profile.query'
 import { FindProfileResponse } from './dto/find-profile.dto'
+import { Validator } from '../../../shared/lib/validator'
 
 export class AccountController implements IController {
   readonly path = '/account'
@@ -22,7 +22,8 @@ export class AccountController implements IController {
 
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus
+    private readonly queryBus: QueryBus,
+    private readonly validator: Validator
   ) {
     const router = Router()
 
@@ -40,31 +41,21 @@ export class AccountController implements IController {
   create: Handler = async (req): Promise<void> => {
     const { email, password, nickname }: CreateAccountDto = req.body
 
-    if (!email || typeof email !== 'string') {
-      throw new Http400Exception('이메일은 필수입니다.')
-    }
-    if (!password || typeof password !== 'string') {
-      throw new Http400Exception('패스워드는 필수입니다.')
-    }
-    if (!nickname || typeof nickname !== 'string') {
-      throw new Http400Exception('닉네임은 필수입니다.')
-    }
-    const command = new CreateAccountCommand(email, password, nickname)
+    const command = new CreateAccountCommand(
+      this.validator.string(email),
+      this.validator.string(password),
+      this.validator.string(nickname)
+    )
     await this.commandBus.execute(command)
   }
 
   login: Handler = async (req): Promise<LoginResponse> => {
     const { email, password }: LoginDto = req.body
 
-    if (!email) {
-      throw new Http400Exception('로그인 실패')
-    }
-
-    if (!password) {
-      throw new Http400Exception('로그인 실패')
-    }
-
-    const command = new LoginCommand(email, password)
+    const command = new LoginCommand(
+      this.validator.string(email),
+      this.validator.string(password)
+    )
     return await this.commandBus.execute(command)
   }
 
@@ -79,7 +70,12 @@ export class AccountController implements IController {
     const account = req.user as IAccount
     const { nickname, password, introduction }: UpdateAccountDto = req.body
 
-    const command = new UpdateAccountCommand(account, nickname, password, introduction)
+    const command = new UpdateAccountCommand(
+      account,
+      this.validator.stringOptional(nickname),
+      this.validator.stringOptional(password),
+      this.validator.stringOptional(introduction)
+    )
     await this.commandBus.execute(command)
   }
 
@@ -91,12 +87,9 @@ export class AccountController implements IController {
   }
 
   findProfile: Handler = async (req): Promise<FindProfileResponse> => {
-    const id = +req.params.id
+    const id = req.params.id
 
-    if (id !== 0 && !id) {
-      throw new Http400Exception('잘못된 아이디입니다.')
-    }
-    const query = new FindProfileQuery(id)
+    const query = new FindProfileQuery(this.validator.numberPipe(id))
     return await this.queryBus.execute(query)
   }
 }

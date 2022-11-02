@@ -1,8 +1,14 @@
 import { Request } from 'express'
 import { Mock } from '../../../@types/test'
 import { CommandBus, QueryBus } from '../../../shared/lib/bus'
+import { Validator } from '../../../shared/lib/validator'
 import { CreateAccountCommand } from '../application/command/create-account/create-account.command'
+import { LoginCommand } from '../application/command/login/login.command'
+import { LogoutCommand } from '../application/command/logout/logout.command'
+import { RefreshTokenCommand } from '../application/command/refresh-token/refresh-token.command'
+import { UpdateAccountCommand } from '../application/command/update-account/update-account.command'
 import { FindProfileQuery } from '../application/query/find-profile.query'
+import { IAccount } from '../domain/account'
 import { AccountController } from './account.controller'
 
 jest.mock('../../../middlewares/auth.middleware', () => ({
@@ -19,18 +25,27 @@ const mockQueryBus = () => ({
   execute: jest.fn()
 })
 
+const mockValidator = () => ({
+  string: jest.fn().mockImplementation((a) => a),
+  stringOptional: jest.fn().mockImplementation((a) => a),
+  numberPipe: jest.fn().mockImplementation((a) => +a)
+})
+
 describe('Account-Controller', () => {
   let controller: AccountController
   let commandBus: Mock<CommandBus>
   let queryBus: Mock<QueryBus>
+  let validator: Mock<Validator>
 
   beforeEach(() => {
     commandBus = mockCommandBus()
     queryBus = mockQueryBus()
+    validator = mockValidator()
 
     controller = new AccountController(
       commandBus as unknown as CommandBus,
-      queryBus as unknown as QueryBus
+      queryBus as unknown as QueryBus,
+      validator as Validator
     )
   })
 
@@ -50,64 +65,115 @@ describe('Account-Controller', () => {
       command = new CreateAccountCommand('email', 'password', 'nickname')
     })
 
-    it('1. email 없는 경우', async () => {
-      request.body.email = ''
-
-      const result = controller.create(request)
-
-      await expect(result).rejects.toThrowError()
-      expect(commandBus.execute).not.toBeCalled()
-    })
-
-    it('2. email 타입', async () => {
-      request.body.email = 123
-
-      const result = controller.create(request)
-
-      await expect(result).rejects.toThrowError()
-      expect(commandBus.execute).not.toBeCalled()
-    })
-
-    it('3. password 없는 경우', async () => {
-      request.body.password = null
-
-      const result = controller.create(request)
-
-      await expect(result).rejects.toThrowError()
-      expect(commandBus.execute).not.toBeCalled()
-    })
-
-    it('4. password 타입', async () => {
-      request.body.password = []
-
-      const result = controller.create(request)
-
-      await expect(result).rejects.toThrowError()
-      expect(commandBus.execute).not.toBeCalled()
-    })
-
-    it('5. nickname 없는 경우', async () => {
-      request.body.nickname = NaN
-
-      const result = controller.create(request)
-
-      await expect(result).rejects.toThrowError()
-      expect(commandBus.execute).not.toBeCalled()
-    })
-
-    it('6. nickname 타입', async () => {
-      request.body.nickname = () => ({})
-
-      const result = controller.create(request)
-
-      await expect(result).rejects.toThrowError()
-      expect(commandBus.execute).not.toBeCalled()
-    })
-
-    it('7. 성공', async () => {
+    it('1. test', async () => {
       const result = controller.create(request)
 
       await expect(result).resolves.toBeUndefined()
+      expect(commandBus.execute).toBeCalledWith(command)
+      expect(validator.string).toBeCalledWith('email')
+      expect(validator.string).toBeCalledWith('password')
+      expect(validator.string).toBeCalledWith('nickname')
+    })
+  })
+
+  describe('2. login TEST', () => {
+    let request: Request
+    let command: LoginCommand
+
+    beforeEach(() => {
+      request = {
+        body: {
+          email: 'email',
+          password: 'password'
+        }
+      } as Request
+
+      command = new LoginCommand('email', 'password')
+
+      commandBus.execute.mockResolvedValue('result')
+    })
+
+    it('1. test', async () => {
+      const result = controller.login(request)
+
+      await expect(result).resolves.toBe('result')
+      expect(commandBus.execute).toBeCalledWith(command)
+      expect(validator.string).toBeCalledWith('email')
+      expect(validator.string).toBeCalledWith('password')
+    })
+  })
+
+  describe('3. logout TEST', () => {
+    let request: Request
+    let command: LogoutCommand
+    let account: IAccount
+
+    beforeEach(() => {
+      account = {} as IAccount
+      request = {
+        user: account
+      } as unknown as Request
+
+      command = new LogoutCommand(account)
+    })
+
+    it('1. test', async () => {
+      const result = controller.logout(request)
+
+      await expect(result).resolves.toBeUndefined()
+      expect(commandBus.execute).toBeCalledWith(command)
+    })
+  })
+
+  describe('4. update TEST', () => {
+    let request: Request
+    let account: IAccount
+    let command: UpdateAccountCommand
+
+    beforeEach(() => {
+      account = {} as IAccount
+      request = {
+        user: account,
+        body: {
+          nickname: 'nickname',
+          password: 'password',
+          introduction: 'introduction'
+        }
+      } as unknown as Request
+
+      command = new UpdateAccountCommand(account, 'nickname', 'password', 'introduction')
+    })
+
+    it('1. test', async () => {
+      const result = controller.update(request)
+
+      await expect(result).resolves.toBeUndefined()
+      expect(commandBus.execute).toBeCalledWith(command)
+      expect(validator.stringOptional).toBeCalledWith('nickname')
+      expect(validator.stringOptional).toBeCalledWith('password')
+      expect(validator.stringOptional).toBeCalledWith('introduction')
+    })
+  })
+
+  describe('5. refresh TEST', () => {
+    let request: Request
+    let command: RefreshTokenCommand
+    let account: IAccount
+
+    beforeEach(() => {
+      account = {} as IAccount
+      request = {
+        user: account
+      } as unknown as Request
+
+      command = new RefreshTokenCommand(account)
+      commandBus.execute.mockResolvedValue('token')
+    })
+
+    it('1. test', async () => {
+      const result = controller.refresh(request)
+
+      await expect(result).resolves.toEqual('token')
       expect(commandBus.execute).toBeCalledWith(command)
     })
   })
@@ -128,29 +194,12 @@ describe('Account-Controller', () => {
       queryBus.execute.mockResolvedValue('result')
     })
 
-    it('1. id 없는 경우', async () => {
-      request.params.id = undefined
-
-      const result = controller.findProfile(request)
-
-      await expect(result).rejects.toThrowError()
-      expect(queryBus.execute).not.toBeCalled()
-    })
-
-    it('2. id 타입', async () => {
-      request.params.id = 'undefined'
-
-      const result = controller.findProfile(request)
-
-      await expect(result).rejects.toThrowError()
-      expect(queryBus.execute).not.toBeCalled()
-    })
-
-    it('3. 성공', async () => {
+    it('1. test', async () => {
       const result = controller.findProfile(request)
 
       await expect(result).resolves.toEqual('result')
       expect(queryBus.execute).toBeCalledWith(query)
+      expect(validator.numberPipe).toBeCalledWith('123')
     })
   })
 })

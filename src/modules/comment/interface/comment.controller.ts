@@ -2,8 +2,8 @@ import { Router } from 'express'
 import { Auth } from '../../../middlewares/auth.middleware'
 import { IController } from '../../../shared/interfaces/controller.interface'
 import { CommandBus, QueryBus } from '../../../shared/lib/bus'
-import { Http400Exception } from '../../../shared/lib/http.exception'
 import { Handler, Wrap } from '../../../shared/lib/request-handler'
+import { Validator } from '../../../shared/lib/validator'
 import { CreateCommentCommand } from '../application/command/create-comment/create-comment.command'
 import { DeleteCommentCommand } from '../application/command/delete-comment/delete-comment.command'
 import { UpdateCommentCommand } from '../application/command/update-comment/update-comment.command'
@@ -18,7 +18,8 @@ export class CommentController implements IController {
 
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus
+    private readonly queryBus: QueryBus,
+    private readonly validator: Validator
   ) {
     const router = Router()
 
@@ -34,15 +35,10 @@ export class CommentController implements IController {
   private find: Handler = async (req): Promise<FindCommentsResponse> => {
     const { article_id, page }: FindCommentsDto = req.query
 
-    if (isNaN(+article_id)) {
-      throw new Http400Exception('id는 number 타입이어야 합니다.')
-    }
-
-    if (page && isNaN(+page)) {
-      throw new Http400Exception('page는 number 타입이어야 합니다.')
-    }
-
-    const query = new FindCommentQuery(+article_id, +page)
+    const query = new FindCommentQuery(
+      this.validator.numberPipe(article_id),
+      this.validator.numberOptionalPipe(page)
+    )
     return await this.queryBus.execute(query)
   }
 
@@ -50,44 +46,35 @@ export class CommentController implements IController {
     const { article_id, content }: CreateCommentDto = req.body
     const account_id = req.user as number
 
-    if (!article_id || typeof article_id !== 'number') {
-      throw new Http400Exception('article_id는 number 타입이어야 합니다.')
-    }
-
-    if (!content || typeof content !== 'string') {
-      throw new Http400Exception('content는 string 타입이어야 합니다.')
-    }
-
-    const command = new CreateCommentCommand(account_id, article_id, content)
+    const command = new CreateCommentCommand(
+      account_id,
+      this.validator.number(article_id),
+      this.validator.string(content)
+    )
     await this.commandBus.execute(command)
   }
 
   private delete: Handler = async (req) => {
-    const comment_id = +req.params.id
+    const comment_id = req.params.id
     const account_id = req.user as number
 
-    if (isNaN(comment_id)) {
-      throw new Http400Exception('id는 number 타입이어야 합니다.')
-    }
-
-    const command = new DeleteCommentCommand(account_id, comment_id)
+    const command = new DeleteCommentCommand(
+      account_id,
+      this.validator.numberPipe(comment_id)
+    )
     await this.commandBus.execute(command)
   }
 
   private update: Handler = async (req) => {
     const { content }: UpdateCommentDto = req.body
-    const comment_id = +req.params.id
+    const comment_id = req.params.id
     const account_id = req.user as number
 
-    if (content && typeof content !== 'string') {
-      throw new Http400Exception('content는 string 타입이어야 합니다.')
-    }
-
-    if (isNaN(comment_id)) {
-      throw new Http400Exception('id는 number 타입이어야 합니다.')
-    }
-
-    const command = new UpdateCommentCommand(account_id, comment_id, content)
+    const command = new UpdateCommentCommand(
+      account_id,
+      this.validator.numberPipe(comment_id),
+      this.validator.string(content)
+    )
     await this.commandBus.execute(command)
   }
 }
