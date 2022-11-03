@@ -8,3 +8,5 @@ dist
 .prettierrc
 .eslintrc.js
 coverage
+deploy
+coverage

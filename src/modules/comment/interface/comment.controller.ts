@@ -32,7 +32,7 @@ export class CommentController implements IController {
     this.router.use(this.path, router)
   }
 
-  private find: Handler = async (req): Promise<FindCommentsResponse> => {
+  find: Handler = async (req): Promise<FindCommentsResponse[]> => {
     const { article_id, page }: FindCommentsDto = req.query
 
     const query = new FindCommentQuery(
@@ -42,7 +42,7 @@ export class CommentController implements IController {
     return await this.queryBus.execute(query)
   }
 
-  private create: Handler = async (req) => {
+  create: Handler = async (req) => {
     const { article_id, content }: CreateCommentDto = req.body
     const account_id = req.user as number
 
@@ -54,7 +54,7 @@ export class CommentController implements IController {
     await this.commandBus.execute(command)
   }
 
-  private delete: Handler = async (req) => {
+  delete: Handler = async (req) => {
     const comment_id = req.params.id
     const account_id = req.user as number
 
@@ -65,7 +65,7 @@ export class CommentController implements IController {
     await this.commandBus.execute(command)
   }
 
-  private update: Handler = async (req) => {
+  update: Handler = async (req) => {
     const { content }: UpdateCommentDto = req.body
     const comment_id = req.params.id
     const account_id = req.user as number

@@ -9,8 +9,8 @@ const mockArticleRepository = () => ({
 })
 
 const mockRedisAdapter = () => ({
-  isExists: jest.fn(),
-  set: jest.fn()
+  lookupExists: jest.fn(),
+  setLookup: jest.fn()
 })
 
 describe('Article-LookupArticle', () => {
@@ -34,24 +34,24 @@ describe('Article-LookupArticle', () => {
     beforeEach(() => {
       command = new LookupArticleCommand(1212, 3434).context
 
-      redisAdapter.isExists.mockResolvedValue(false)
+      redisAdapter.lookupExists.mockResolvedValue(false)
     })
 
     it('1. 있는 경우 패스', async () => {
-      redisAdapter.isExists.mockResolvedValueOnce(true)
+      redisAdapter.lookupExists.mockResolvedValueOnce(true)
 
       const result = handler.execute(command)
       await expect(result).resolves.toBeUndefined()
-      expect(redisAdapter.isExists).toBeCalledWith(3434, 1212)
+      expect(redisAdapter.lookupExists).toBeCalledWith(3434, 1212)
       expect(articleRepository.updateViewsById).not.toBeCalled()
-      expect(redisAdapter.set).not.toBeCalled()
+      expect(redisAdapter.setLookup).not.toBeCalled()
     })
 
     it('2. 없는 경우 생성', async () => {
       const result = handler.execute(command)
       await expect(result).resolves.toBeUndefined()
       expect(articleRepository.updateViewsById).toBeCalledWith(1212)
-      expect(redisAdapter.set).toBeCalledWith(3434, 1212)
+      expect(redisAdapter.setLookup).toBeCalledWith(3434, 1212)
     })
   })
 })

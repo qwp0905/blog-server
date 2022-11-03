@@ -1,6 +1,6 @@
 export interface ICommand {
   readonly key: string
-  readonly context: any
+  readonly context: unknown
 }
 
 export interface ICommandResult {}
