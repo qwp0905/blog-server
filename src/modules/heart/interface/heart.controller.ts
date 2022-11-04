@@ -27,7 +27,7 @@ export class HeartController implements IController {
     this.router.use(this.path, router)
   }
 
-  private find: Handler = async (req): Promise<boolean> => {
+  find: Handler = async (req): Promise<boolean> => {
     const article_id = req.params.id
     const account_id = req.user as number
 
@@ -35,7 +35,7 @@ export class HeartController implements IController {
     return await this.queryBus.execute(query)
   }
 
-  private create: Handler = async (req): Promise<void> => {
+  create: Handler = async (req): Promise<void> => {
     const article_id = req.params.id
     const account_id = req.user as number
 
@@ -46,7 +46,7 @@ export class HeartController implements IController {
     await this.commandBus.execute(command)
   }
 
-  private delete: Handler = async (req): Promise<void> => {
+  delete: Handler = async (req): Promise<void> => {
     const article_id = req.params.id
     const account_id = req.user as number
 

@@ -10,7 +10,7 @@ export class FindHeartHandler implements IQueryHandler<FindHeartQuery, boolean> 
   async execute({ account_id, article_id }: IFindHeartQuery): Promise<boolean> {
     const heart = await this.dataSource
       .createQueryBuilder()
-      .select('*')
+      .select('id')
       .from(HeartEntity, 'heart')
       .where('account_id = :account_id', { account_id })
       .andWhere('article_id = :article_id', { article_id })

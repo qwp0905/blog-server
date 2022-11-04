@@ -33,7 +33,7 @@ export class HeartRepository implements IHeartRepository {
       .execute()
   }
 
-  async deleteOneById(heart: IHeart): Promise<void> {
+  async deleteOne(heart: IHeart): Promise<void> {
     const { id } = heart.properties()
 
     await this.dataSource

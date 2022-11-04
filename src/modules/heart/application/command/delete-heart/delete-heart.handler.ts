@@ -1,5 +1,4 @@
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
-import { Http404Exception } from '../../../../../shared/lib/http.exception'
 import { IHeartRepository } from '../../../domain/heart.repository.interface'
 import {
   DeleteHeartCommand,
@@ -15,9 +14,9 @@ export class DeleteHeartHandler implements ICommandHandler<DeleteHeartCommand> {
     const heart = await this.heartRepository.findOneByIds(account_id, article_id)
 
     if (!heart) {
-      throw new Http404Exception('게시물이 없습니다')
+      return
     }
 
-    await this.heartRepository.deleteOneById(heart)
+    await this.heartRepository.deleteOne(heart)
   }
 }
