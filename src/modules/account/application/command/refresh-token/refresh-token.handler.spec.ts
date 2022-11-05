@@ -41,7 +41,6 @@ describe('Account-RefreshToken', () => {
         email: 'email@email.com',
         nickname: 'nickname',
         role: 'admin',
-        introduction: 'introduction',
         password: 'hashed_password',
         created_at: new Date(),
         updated_at: new Date(),

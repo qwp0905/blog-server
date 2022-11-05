@@ -13,7 +13,6 @@ describe('Account-Account', () => {
       email: 'email@email.com',
       nickname: 'nickname',
       role: 'admin',
-      introduction: 'introduction',
       password: 'password',
       created_at,
       updated_at,
@@ -102,11 +101,10 @@ describe('Account-Account', () => {
 
   describe('7. update TEST', () => {
     it('1. password 없는 경우', () => {
-      const result = account.update('new_nickname', undefined, 'new_introduction')
+      const result = account.update('new_nickname', undefined)
       expect(result).toBeUndefined()
       expect(account).toHaveProperty('password', 'password')
       expect(account).toHaveProperty('nickname', 'new_nickname')
-      expect(account).toHaveProperty('introduction', 'new_introduction')
     })
 
     it('2. password 있는 경우', () => {
@@ -114,11 +112,10 @@ describe('Account-Account', () => {
       jest.spyOn(bcrypt, 'genSaltSync').mockReturnValue('salt')
       jest.spyOn(bcrypt, 'hashSync').mockReturnValue('hashed_pwd')
 
-      const result = account.update(undefined, 'new_pwd', undefined)
+      const result = account.update(undefined, 'new_pwd')
       expect(result).toBeUndefined()
       expect(account).toHaveProperty('password', 'hashed_pwd')
       expect(account).toHaveProperty('nickname', 'nickname')
-      expect(account).toHaveProperty('introduction', 'introduction')
       expect(account.hashPassword).toBeCalled()
       expect(bcrypt.genSaltSync).toBeCalled()
       expect(bcrypt.hashSync).toBeCalledWith('new_pwd', 'salt')

@@ -25,10 +25,7 @@ export class AccountEntity {
   @Column()
   nickname: string
 
-  @Column()
-  introduction: string
-
-  @Column({ enum: ['admin', 'guest'] })
+  @Column({ type: 'enum', enum: ['admin', 'guest'], default: 'guest' })
   role: Role
 
   @Column({ default: null })

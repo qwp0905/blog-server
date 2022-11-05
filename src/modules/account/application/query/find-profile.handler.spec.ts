@@ -46,7 +46,6 @@ describe('Account-findProfile', () => {
         articles: 123,
         created_at: new Date(),
         id: 123123,
-        introduction: 'introduction',
         nickname: 'nickname'
       }
 

@@ -63,7 +63,7 @@ export class Validator {
       throw new Http400Exception(`${param} must be array`)
     }
 
-    if (max_length ?? max_length < param.length) {
+    if (max_length && max_length < param.length) {
       throw new Http400Exception(`${param} must be shorter than ${max_length}`)
     }
 

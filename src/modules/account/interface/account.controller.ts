@@ -68,13 +68,12 @@ export class AccountController implements IController {
 
   update: Handler = async (req): Promise<void> => {
     const account = req.user as IAccount
-    const { nickname, password, introduction }: UpdateAccountDto = req.body
+    const { nickname, password }: UpdateAccountDto = req.body
 
     const command = new UpdateAccountCommand(
       account,
       this.validator.stringOptional(nickname),
-      this.validator.stringOptional(password),
-      this.validator.stringOptional(introduction)
+      this.validator.stringOptional(password)
     )
     await this.commandBus.execute(command)
   }

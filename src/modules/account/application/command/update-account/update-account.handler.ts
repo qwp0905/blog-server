@@ -11,12 +11,7 @@ export class UpdateAccountHandler implements ICommandHandler<UpdateAccountComman
   readonly key = UPDATE_ACCOUNT
   constructor(private readonly accountRepository: IAccountRepository) {}
 
-  async execute({
-    account,
-    nickname,
-    password,
-    introduction
-  }: IUpdateAccountCommand): Promise<void> {
+  async execute({ account, nickname, password }: IUpdateAccountCommand): Promise<void> {
     if (nickname) {
       const is_exists_nick = await this.accountRepository.findOneByNickname(nickname)
       if (!!is_exists_nick) {
@@ -24,7 +19,7 @@ export class UpdateAccountHandler implements ICommandHandler<UpdateAccountComman
       }
     }
 
-    account.update(nickname, password, introduction)
+    account.update(nickname, password)
 
     await this.accountRepository.updateOne(account)
   }

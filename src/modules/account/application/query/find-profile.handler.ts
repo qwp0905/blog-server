@@ -21,7 +21,6 @@ export class FindProfileHandler
       .select('A.id', 'id')
       .addSelect('A.nickname', 'nickname')
       .addSelect('A.created_at', 'created_at')
-      .addSelect('A.introduction', 'introduction')
       .addSelect(
         (queryBuilder) =>
           queryBuilder

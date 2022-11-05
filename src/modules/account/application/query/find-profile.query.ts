@@ -18,7 +18,6 @@ export class FindProfileQuery implements IQuery {
 export class FindProfileResult implements IQueryResult {
   id: number
   nickname: string
-  introduction: string
   created_at: Date
   articles: number
 }

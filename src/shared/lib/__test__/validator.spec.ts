@@ -164,7 +164,7 @@ describe('Validator', () => {
     })
 
     it('4. 정상 작동', () => {
-      expect(validator.array([1, 2, 3])).toEqual([1, 2, 3])
+      expect(validator.array([1, 2, 3], 5)).toEqual([1, 2, 3])
     })
 
     it('5. 길이 검사', () => {

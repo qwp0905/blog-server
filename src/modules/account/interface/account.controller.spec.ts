@@ -136,12 +136,11 @@ describe('Account-Controller', () => {
         user: account,
         body: {
           nickname: 'nickname',
-          password: 'password',
-          introduction: 'introduction'
+          password: 'password'
         }
       } as unknown as Request
 
-      command = new UpdateAccountCommand(account, 'nickname', 'password', 'introduction')
+      command = new UpdateAccountCommand(account, 'nickname', 'password')
     })
 
     it('1. test', async () => {
@@ -151,7 +150,6 @@ describe('Account-Controller', () => {
       expect(commandBus.execute).toBeCalledWith(command)
       expect(validator.stringOptional).toBeCalledWith('nickname')
       expect(validator.stringOptional).toBeCalledWith('password')
-      expect(validator.stringOptional).toBeCalledWith('introduction')
     })
   })
 

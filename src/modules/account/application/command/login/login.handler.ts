@@ -39,7 +39,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
       id: properties.id,
       email: properties.email,
       nickname: properties.nickname,
-      introduction: properties.introduction,
+      role: properties.role,
       created_at: properties.created_at,
       access_token,
       refresh_token

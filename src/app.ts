@@ -26,9 +26,8 @@ export class App {
   }
 
   async initializeDatabase() {
-    await DATABASE.initialize()
+    await Promise.all([DATABASE.initialize(), REDIS_CACHE.ping()])
     console.log('Database initialized')
-    await REDIS_CACHE.ping()
     console.log('Redis initialized')
   }
 

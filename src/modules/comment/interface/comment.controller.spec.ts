@@ -1,4 +1,4 @@
-import { Request } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { Mock } from '../../../@types/test'
 import { CommandBus, QueryBus } from '../../../shared/lib/bus'
 import { Validator } from '../../../shared/lib/validator'
@@ -9,7 +9,7 @@ import { FindCommentQuery } from '../application/query/find-comment.query'
 import { CommentController } from './comment.controller'
 
 jest.mock('../../../middlewares/auth.middleware', () => ({
-  Auth: jest.fn().mockReturnValue((req, res, next) => {
+  Auth: jest.fn().mockReturnValue((req: Request, res: Response, next: NextFunction) => {
     next()
   })
 }))

@@ -61,7 +61,7 @@ describe('Account-Login', () => {
         id: 123123,
         email: 'email@email.com',
         nickname: 'nickname',
-        introduction: 'introduction',
+        role: 'admin',
         created_at,
         access_token: 'access_token',
         refresh_token: 'refresh_token'
@@ -73,7 +73,6 @@ describe('Account-Login', () => {
         email: 'email@email.com',
         nickname: 'nickname',
         role: 'admin',
-        introduction: 'introduction',
         password: 'hashed_password',
         created_at,
         updated_at: new Date(),

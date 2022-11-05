@@ -29,24 +29,19 @@ describe('Account-UpdateAccount', () => {
 
     beforeEach(() => {
       account = mockAccount()
-      command = new UpdateAccountCommand(
-        account as IAccount,
-        'nickname',
-        'password',
-        'introduction'
-      ).context
+      command = new UpdateAccountCommand(account as IAccount, 'nickname', 'password')
+        .context
     })
 
     it('1. 닉네임이 변경되지 않는 경우', async () => {
       command = {
-        account: account as IAccount,
-        introduction: 'introduction'
+        account: account as IAccount
       }
 
       const result = handler.execute(command)
       await expect(result).resolves.toBeUndefined()
       expect(accountRepository.findOneByNickname).not.toBeCalled()
-      expect(account.update).toBeCalledWith(undefined, undefined, 'introduction')
+      expect(account.update).toBeCalledWith(undefined, undefined)
       expect(accountRepository.updateOne).toBeCalledWith(account)
     })
 
@@ -64,7 +59,7 @@ describe('Account-UpdateAccount', () => {
 
       await expect(result).resolves.toBeUndefined()
       expect(accountRepository.findOneByNickname).toBeCalledWith('nickname')
-      expect(account.update).toBeCalledWith('nickname', 'password', 'introduction')
+      expect(account.update).toBeCalledWith('nickname', 'password')
       expect(accountRepository.updateOne).toBeCalledWith(account)
     })
   })

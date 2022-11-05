@@ -41,25 +41,24 @@ export class AccountRepository implements IAccountRepository {
   }
 
   async updateOne(account: IAccount): Promise<void> {
-    const { id, password, role, refresh_token, nickname, introduction } =
-      account.properties()
+    const { id, password, role, refresh_token, nickname } = account.properties()
 
     await this.dataSource
       .createQueryBuilder()
       .update(AccountEntity)
-      .set({ password, role, refresh_token, nickname, introduction })
+      .set({ password, role, refresh_token, nickname })
       .where('id = :id', { id })
       .execute()
   }
 
   async insertOne(account: IAccount): Promise<void> {
-    const { email, nickname, password, role, introduction } = account.properties()
+    const { email, nickname, password, role } = account.properties()
 
     await this.dataSource
       .createQueryBuilder()
       .insert()
       .into(AccountEntity)
-      .values({ email, nickname, password, role, introduction })
+      .values({ email, nickname, password, role })
       .execute()
   }
 

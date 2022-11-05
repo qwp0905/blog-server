@@ -18,7 +18,6 @@ export interface IAccountOptionalProperties {
   created_at?: Date
   updated_at?: Date
   refresh_token?: string | null
-  introduction?: string
 }
 
 export interface IAccountProperties
@@ -32,7 +31,7 @@ export interface IAccount {
   login(refresh_token: string): void
   logout(): void
   properties(): IAccountProperties
-  update(nickname?: string, password?: string, introduction?: string): void
+  update(nickname?: string, password?: string): void
 }
 
 export class Account implements IAccount {
@@ -40,7 +39,6 @@ export class Account implements IAccount {
   private email: string
   private password: string
   private nickname: string
-  private introduction = ''
   private role: Role = 'guest'
   private refresh_token = null
   private created_at: Date
@@ -79,9 +77,8 @@ export class Account implements IAccount {
     this.refresh_token = null
   }
 
-  update(nickname?: string, password?: string, introduction?: string) {
+  update(nickname?: string, password?: string) {
     this.nickname = nickname ?? this.nickname
-    this.introduction = introduction ?? this.introduction
 
     if (password) {
       this.password = password
@@ -95,7 +92,6 @@ export class Account implements IAccount {
       email: this.email,
       nickname: this.nickname,
       password: this.password,
-      introduction: this.introduction,
       role: this.role,
       refresh_token: this.refresh_token,
       created_at: this.created_at,
