@@ -15,5 +15,6 @@ COPY --from=build /origin/dist /app/dist
 COPY --from=build /origin/node_modules /app/node_modules
 
 COPY ./.env /app/
+COPY ./.env.production /app/
 
 CMD node dist/main.js
