@@ -18,7 +18,6 @@ export class FindArticleDetailQuery implements IQuery {
 export class FindArticleDetailResult implements IQueryResult {
   id: number
   account_id: number
-  nickname: string
   title: string
   views: number
   heart: number

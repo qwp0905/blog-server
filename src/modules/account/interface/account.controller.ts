@@ -12,8 +12,6 @@ import { Auth } from '../../../middlewares/auth.middleware'
 import { UpdateAccountDto } from './dto/update-account.dto'
 import { UpdateAccountCommand } from '../application/command/update-account/update-account.command'
 import { RefreshTokenCommand } from '../application/command/refresh-token/refresh-token.command'
-import { FindProfileQuery } from '../application/query/find-profile.query'
-import { FindProfileResponse } from './dto/find-profile.dto'
 import { Validator } from '../../../shared/lib/validator'
 
 export class AccountController implements IController {
@@ -33,7 +31,6 @@ export class AccountController implements IController {
       .post('/logout', Auth(), Wrap(this.logout))
       .patch('/', Auth(), Wrap(this.update))
       .get('/refresh', Auth(), Wrap(this.refresh))
-      .get('/:id', Wrap(this.findProfile))
 
     this.router.use(this.path, router)
   }
@@ -83,12 +80,5 @@ export class AccountController implements IController {
 
     const command = new RefreshTokenCommand(account)
     return await this.commandBus.execute(command)
-  }
-
-  findProfile: Handler = async (req): Promise<FindProfileResponse> => {
-    const id = req.params.id
-
-    const query = new FindProfileQuery(this.validator.numberPipe(id))
-    return await this.queryBus.execute(query)
   }
 }

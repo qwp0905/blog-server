@@ -1,6 +1,5 @@
 import { DataSource } from 'typeorm'
 import { IQueryHandler } from '../../../../../shared/interfaces/query'
-import { AccountEntity } from '../../../../account/infrastructure/entities/account.entity'
 import { CommentEntity } from '../../../../comment/infrastructure/entities/comment.entity'
 import { HeartEntity } from '../../../../heart/infrastructure/entities/heart.entity'
 import { ArticleTagMapEntity } from '../../../infrastructure/entities/article-tag-map.entity'
@@ -31,14 +30,6 @@ export class FindArticleDetailHandler
       .addSelect('A.views', 'views')
       .addSelect('A.created_at', 'created_at')
       .addSelect('A.updated_at', 'updated_at')
-      .addSelect(
-        (queryBuilder) =>
-          queryBuilder
-            .select('nickname')
-            .from(AccountEntity, 'account')
-            .where('id = A.account_id'),
-        'nickname'
-      )
       .addSelect(
         (queryBuilder) =>
           queryBuilder

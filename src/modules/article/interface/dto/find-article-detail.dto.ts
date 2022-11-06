@@ -3,7 +3,6 @@ import { FindArticleDetailResult } from '../../application/query/find-detail/fin
 export class FindArticleDetailResponse implements FindArticleDetailResult {
   id: number
   account_id: number
-  nickname: string
   title: string
   views: number
   heart: number

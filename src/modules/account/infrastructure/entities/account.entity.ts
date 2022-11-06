@@ -4,12 +4,14 @@ import {
   Entity,
   JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
 import { Role } from '../../../../@types/account'
 import { ArticleEntity } from '../../../article/infrastructure/entities/article.entity'
 import { HeartEntity } from '../../../heart/infrastructure/entities/heart.entity'
+import { ProfileEntity } from '../../../profile/infrastructure/entities/profile.entity'
 
 @Entity('account')
 export class AccountEntity {
@@ -44,4 +46,8 @@ export class AccountEntity {
   @OneToMany(() => HeartEntity, (Heart) => Heart)
   @JoinColumn()
   hearts?: HeartEntity[]
+
+  @OneToOne(() => ProfileEntity, (Profile) => Profile)
+  @JoinColumn()
+  profile?: ProfileEntity
 }

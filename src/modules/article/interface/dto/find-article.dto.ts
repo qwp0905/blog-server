@@ -14,6 +14,5 @@ export class FindArticleResponse implements FindArticleAllResult {
   comments: number
   created_at: Date
   updated_at: Date
-  nickname: string
   tags: string[]
 }

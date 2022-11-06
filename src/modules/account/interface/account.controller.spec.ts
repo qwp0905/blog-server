@@ -7,7 +7,6 @@ import { LoginCommand } from '../application/command/login/login.command'
 import { LogoutCommand } from '../application/command/logout/logout.command'
 import { RefreshTokenCommand } from '../application/command/refresh-token/refresh-token.command'
 import { UpdateAccountCommand } from '../application/command/update-account/update-account.command'
-import { FindProfileQuery } from '../application/query/find-profile.query'
 import { IAccount } from '../domain/account'
 import { AccountController } from './account.controller'
 
@@ -173,31 +172,6 @@ describe('Account-Controller', () => {
 
       await expect(result).resolves.toEqual('token')
       expect(commandBus.execute).toBeCalledWith(command)
-    })
-  })
-
-  describe('6. findProfile TEST', () => {
-    let request: Request
-    let query: FindProfileQuery
-
-    beforeEach(() => {
-      request = {
-        params: {
-          id: '123'
-        }
-      } as unknown as Request
-
-      query = new FindProfileQuery(123)
-
-      queryBus.execute.mockResolvedValue('result')
-    })
-
-    it('1. test', async () => {
-      const result = controller.findProfile(request)
-
-      await expect(result).resolves.toEqual('result')
-      expect(queryBus.execute).toBeCalledWith(query)
-      expect(validator.numberPipe).toBeCalledWith('123')
     })
   })
 })

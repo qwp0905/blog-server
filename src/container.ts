@@ -15,7 +15,6 @@ import { LoginHandler } from './modules/account/application/command/login/login.
 import { LogoutHandler } from './modules/account/application/command/logout/logout.handler'
 import { RefreshTokenHandler } from './modules/account/application/command/refresh-token/refresh-token.handler'
 import { UpdateAccountHandler } from './modules/account/application/command/update-account/update-account.handler'
-import { FindProfileHandler } from './modules/account/application/query/find-profile.handler'
 import { AccountFactory } from './modules/account/domain/account.factory'
 import { AccountRepository } from './modules/account/infrastructure/repositories/account.repository'
 import { AccountController } from './modules/account/interface/account.controller'
@@ -49,6 +48,11 @@ import { UploadController } from './modules/upload/interface/upload.controller'
 import { IController } from './shared/interfaces/controller.interface'
 import { CommandBus, QueryBus } from './shared/lib/bus'
 import { Validator } from './shared/lib/validator'
+import { ProfileController } from './modules/profile/interface/profile.controller'
+import { ProfileFactory } from './modules/profile/domain/profile.factory'
+import { ProfileRepository } from './modules/profile/infrastructure/repositories/profile.repository'
+import { FindProfileHandler } from './modules/profile/application/query/find-profile.handler'
+import { UpdateProfileHandler } from './modules/profile/application/command/update-profile.handler'
 
 // External ###############################################################
 export const DATABASE = new DataSource(TypeOrmConfig)
@@ -87,8 +91,6 @@ const logoutHandler = new LogoutHandler(accountRepository)
 const updateAccountHandler = new UpdateAccountHandler(accountRepository)
 const refreshTokenHandler = new RefreshTokenHandler(commandBus)
 
-const findProfileHandler = new FindProfileHandler(DATABASE)
-
 const accountCommandHandlers = [
   createAccountHandler,
   findAccountHandler,
@@ -97,7 +99,7 @@ const accountCommandHandlers = [
   updateAccountHandler,
   refreshTokenHandler
 ]
-const accountQueryHandlers = [findProfileHandler]
+const accountQueryHandlers = []
 
 // Article ###############################################################
 const articleFactory = new ArticleFactory()
@@ -164,12 +166,23 @@ const uploadHandler = new UploadHandler(upload_amazonAdapter)
 
 const uploadCommandHandlers = [uploadHandler]
 
+// Profile ###############################################################
+const profileFactory = new ProfileFactory()
+const profileRepository = new ProfileRepository(DATABASE, profileFactory)
+
+const updateProfileHandler = new UpdateProfileHandler(profileRepository)
+const findProfileHandler = new FindProfileHandler(DATABASE)
+
+const profileCommandHandlers = [updateProfileHandler]
+const profileQueryHandlers = [findProfileHandler]
+
 // Controllers ###############################################################
 const accountController = new AccountController(commandBus, queryBus, validator)
 const articleController = new ArticleController(commandBus, queryBus, validator)
 const commentController = new CommentController(commandBus, queryBus, validator)
 const heartController = new HeartController(commandBus, queryBus, validator)
 const uploadController = new UploadController(commandBus, validator)
+const profileController = new ProfileController(commandBus, queryBus, validator)
 
 // Register Handlers ###############################################################
 commandBus.registerHandlers([
@@ -178,13 +191,15 @@ commandBus.registerHandlers([
   ...articleCommandHandlers,
   ...commentCommandHandlers,
   ...heartCommandHandlers,
-  ...uploadCommandHandlers
+  ...uploadCommandHandlers,
+  ...profileCommandHandlers
 ])
 queryBus.registerHandlers([
   ...accountQueryHandlers,
   ...articleQueryHandlers,
   ...commentQueryHandlers,
-  ...heartQueryHandlers
+  ...heartQueryHandlers,
+  ...profileQueryHandlers
 ])
 
 const Container: IController[] = [
@@ -192,7 +207,8 @@ const Container: IController[] = [
   articleController,
   commentController,
   heartController,
-  uploadController
+  uploadController,
+  profileController
 ]
 
 export default Container

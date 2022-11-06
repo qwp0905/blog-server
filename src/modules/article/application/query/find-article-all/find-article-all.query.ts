@@ -25,6 +25,5 @@ export class FindArticleAllResult {
   comments: number
   created_at: Date
   updated_at: Date
-  nickname: string
   tags: string[]
 }
