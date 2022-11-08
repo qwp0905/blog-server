@@ -18,12 +18,14 @@ sudo docker network rm www
 sudo docker network create -d bridge www
 
 sudo docker run -d \
+  --pull "always" \
   -p 80:80 \
   --name proxy \
   --net www \
   qwp1216/blog-server-proxy
 
 sudo docker run -d \
+  --pull "always" \
   -p 6379:6379 \
   -v ${BASE_PATH}/redis-data:/data \
   --name redis \
@@ -31,6 +33,7 @@ sudo docker run -d \
   redis
 
 sudo docker run -d \
+  --pull "always" \
   -p 3001:3001 \
   --name web-server \
   --net www \
