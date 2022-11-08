@@ -12,7 +12,7 @@ sudo docker run -d \
 
 sudo docker run -d \
   -p 6379:6379 \
-  -v ./redis-data:/data \
+  -v ${BASE_PATH}/redis-data:/data \
   --name redis \
   redis
 
