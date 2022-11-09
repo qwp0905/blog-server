@@ -19,7 +19,7 @@ sudo docker network create -d bridge www
 
 sudo docker run -d \
   --pull "always" \
-  -p 80:80 \
+  -p 443:443 \
   --name proxy \
   --net www \
   qwp1216/blog-server-proxy
