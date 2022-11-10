@@ -3,6 +3,7 @@ FROM alpine AS ssl
 WORKDIR /ssl/
 
 RUN apt-get update && \
+  apt-get -y install openssl && \
   openssl req -newkey rsa:4096 \
     -days 365 \
     -nodes \
