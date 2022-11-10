@@ -1,4 +1,4 @@
-FROM alpine AS ssl
+FROM ubuntu AS ssl
 
 WORKDIR /ssl/
 
