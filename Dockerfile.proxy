@@ -20,5 +20,6 @@ COPY --from=ssl /ssl/private.key /etc/ssl/
 COPY --from=ssl /ssl/certification.crt /etc/ssl/
 
 EXPOSE 443
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
