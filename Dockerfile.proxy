@@ -8,7 +8,7 @@ RUN apt-get update && \
     -days 365 \
     -nodes \
     -x509 \
-    -subj "/C=KR/ST=Seoul/L=Seoul/O=blog/OU=blog/CN=localhost" \
+    -subj "/C=KR/ST=Seoul/L=Seoul/O=blog/OU=blog/CN=server.blog.internal" \
     -keyout private.key \
     -out certification.crt
 
@@ -20,6 +20,5 @@ COPY --from=ssl /ssl/private.key /etc/ssl/
 COPY --from=ssl /ssl/certification.crt /etc/ssl/
 
 EXPOSE 443
-EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
