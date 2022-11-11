@@ -19,13 +19,6 @@ sudo docker network create -d bridge www
 
 sudo docker run -d \
   --pull "always" \
-  -p 443:443 \
-  --name proxy \
-  --net www \
-  qwp1216/blog-server-proxy
-
-sudo docker run -d \
-  --pull "always" \
   -p 6379:6379 \
   -v ${BASE_PATH}/redis-data:/data \
   --name redis \
@@ -38,5 +31,12 @@ sudo docker run -d \
   --name web-server \
   --net www \
   qwp1216/blog-server
+
+sudo docker run -d \
+  --pull "always" \
+  -p 443:443 \
+  --name proxy \
+  --net www \
+  qwp1216/blog-server-proxy
 
 sudo docker images --quiet --filter=dangling=true | sudo xargs --no-run-if-empty docker rmi
