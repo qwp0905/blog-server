@@ -1,5 +1,6 @@
 import { DataSource, SelectQueryBuilder } from 'typeorm'
 import { Mock } from '../../../../../@types/test'
+import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
 import { FindTagsHandler } from './find-tags.handler'
 import { FindTagsQuery, IFindTagsQuery } from './find-tags.query'
 
@@ -22,14 +23,24 @@ const mockQueryBuilder = () => ({
   getRawOne: jest.fn()
 })
 
+const mockRedisAdapter = () => ({
+  getTags: jest.fn(),
+  setTags: jest.fn()
+})
+
 describe('Article-FindTags', () => {
   let handler: FindTagsHandler
   let dataSource: Mock<DataSource>
+  let redisAdapter: Mock<IRedisAdapter>
 
   beforeEach(() => {
     dataSource = mockDataSource()
+    redisAdapter = mockRedisAdapter()
 
-    handler = new FindTagsHandler(dataSource as unknown as DataSource)
+    handler = new FindTagsHandler(
+      dataSource as unknown as DataSource,
+      redisAdapter as IRedisAdapter
+    )
   })
 
   describe('TEST', () => {

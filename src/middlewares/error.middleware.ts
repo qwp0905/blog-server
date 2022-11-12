@@ -8,7 +8,10 @@ export const ErrorMiddleWare: ErrorRequestHandler = (exception, _, res, next) =>
     exception.status ||
     500
 
-  console.error(exception)
+  if (error_status !== 401) {
+    console.error(exception)
+  }
+
   res.status(200).json({
     code: error_status,
     result: false,

@@ -1,6 +1,7 @@
 import { Mock } from '../../../../../@types/test'
 import { IArticle } from '../../../domain/article'
 import { IArticleRepository } from '../../../domain/article.repository.interface'
+import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
 import { DeleteArticleCommand, IDeleteArticleCommand } from './delete-article.command'
 import { DeleteArticleHandler } from './delete-article.handler'
 
@@ -11,14 +12,23 @@ const mockArticleRepository = () => ({
 
 const mockArticle = () => ({})
 
+const mockRedisAdapter = () => ({
+  refreshTags: jest.fn()
+})
+
 describe('Article-DeleteArticle', () => {
   let handler: DeleteArticleHandler
   let articleRepository: Mock<IArticleRepository>
+  let redisAdapter: Mock<IRedisAdapter>
 
   beforeEach(() => {
     articleRepository = mockArticleRepository()
+    redisAdapter = mockRedisAdapter()
 
-    handler = new DeleteArticleHandler(articleRepository as IArticleRepository)
+    handler = new DeleteArticleHandler(
+      articleRepository as IArticleRepository,
+      redisAdapter as IRedisAdapter
+    )
   })
 
   describe('TEST', () => {

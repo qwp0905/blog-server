@@ -1,6 +1,7 @@
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
 import { Http404Exception } from '../../../../../shared/lib/http.exception'
 import { IArticleRepository } from '../../../domain/article.repository.interface'
+import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
 import {
   IUpdateArticleCommand,
   UpdateArticleCommand,
@@ -9,7 +10,10 @@ import {
 
 export class UpdateArticleHandler implements ICommandHandler<UpdateArticleCommand> {
   readonly key = UPDATE_ARTICLE
-  constructor(private readonly articleRepository: IArticleRepository) {}
+  constructor(
+    private readonly articleRepository: IArticleRepository,
+    private readonly redisAdapter: IRedisAdapter
+  ) {}
 
   async execute({
     account_id,
@@ -27,5 +31,6 @@ export class UpdateArticleHandler implements ICommandHandler<UpdateArticleComman
     article.update(title, content, tags)
 
     await this.articleRepository.updateOne(article)
+    await this.redisAdapter.refreshTags()
   }
 }

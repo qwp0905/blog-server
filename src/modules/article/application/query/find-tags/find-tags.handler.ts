@@ -3,6 +3,7 @@ import { IQueryHandler } from '../../../../../shared/interfaces/query'
 import { ArticleTagMapEntity } from '../../../infrastructure/entities/article-tag-map.entity'
 import { ArticleEntity } from '../../../infrastructure/entities/article.entity'
 import { TagEntity } from '../../../infrastructure/entities/tag.entity'
+import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
 import {
   FindTagsQuery,
   FindTagsResult,
@@ -12,9 +13,17 @@ import {
 
 export class FindTagsHandler implements IQueryHandler<FindTagsQuery, FindTagsResult[]> {
   readonly key = FIND_TAGS
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly redisAdapter: IRedisAdapter
+  ) {}
 
   async execute({ account_id }: IFindTagsQuery): Promise<FindTagsResult[]> {
+    const cache = await this.redisAdapter.getTags()
+    if (cache) {
+      return cache
+    }
+
     const result = await this.dataSource
       .createQueryBuilder()
       .select('C.tag_name', 'tag_name')
@@ -38,6 +47,8 @@ export class FindTagsHandler implements IQueryHandler<FindTagsQuery, FindTagsRes
         account_id
       })
       .getRawOne()
+
+    await this.redisAdapter.setTags([total, ...result])
 
     return [total, ...result]
   }

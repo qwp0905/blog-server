@@ -110,13 +110,23 @@ const lookupArticleHandler = new LookupArticleHandler(
   articleRepository,
   article_redisAdapter
 )
-const createArticleHandler = new CreateArticleHandler(articleRepository, articleFactory)
-const updateArticleHandler = new UpdateArticleHandler(articleRepository)
-const deleteArticleHandler = new DeleteArticleHandler(articleRepository)
+const createArticleHandler = new CreateArticleHandler(
+  articleRepository,
+  articleFactory,
+  article_redisAdapter
+)
+const updateArticleHandler = new UpdateArticleHandler(
+  articleRepository,
+  article_redisAdapter
+)
+const deleteArticleHandler = new DeleteArticleHandler(
+  articleRepository,
+  article_redisAdapter
+)
 
 const findArticleAllHandler = new FindArticleAllHandler(DATABASE)
 const findArticleDetailHandler = new FindArticleDetailHandler(DATABASE)
-const findTagsHandler = new FindTagsHandler(DATABASE)
+const findTagsHandler = new FindTagsHandler(DATABASE, article_redisAdapter)
 
 const articleCommandHandlers = [
   lookupArticleHandler,

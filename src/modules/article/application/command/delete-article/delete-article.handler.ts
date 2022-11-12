@@ -1,6 +1,7 @@
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
 import { Http404Exception } from '../../../../../shared/lib/http.exception'
 import { IArticleRepository } from '../../../domain/article.repository.interface'
+import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
 import {
   DeleteArticleCommand,
   DELETE_ARTICLE,
@@ -9,7 +10,10 @@ import {
 
 export class DeleteArticleHandler implements ICommandHandler<DeleteArticleCommand> {
   readonly key = DELETE_ARTICLE
-  constructor(private readonly articleRepository: IArticleRepository) {}
+  constructor(
+    private readonly articleRepository: IArticleRepository,
+    private readonly redisAdapter: IRedisAdapter
+  ) {}
 
   async execute({ article_id, account_id }: IDeleteArticleCommand): Promise<void> {
     const article = await this.articleRepository.findOneById(article_id, account_id)
@@ -19,5 +23,6 @@ export class DeleteArticleHandler implements ICommandHandler<DeleteArticleComman
     }
 
     await this.articleRepository.deleteOne(article)
+    await this.redisAdapter.refreshTags()
   }
 }

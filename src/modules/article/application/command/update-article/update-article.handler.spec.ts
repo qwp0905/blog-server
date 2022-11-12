@@ -1,6 +1,7 @@
 import { Mock } from '../../../../../@types/test'
 import { IArticle } from '../../../domain/article'
 import { IArticleRepository } from '../../../domain/article.repository.interface'
+import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
 import { IUpdateArticleCommand, UpdateArticleCommand } from './update-article.command'
 import { UpdateArticleHandler } from './update-article.handler'
 
@@ -13,14 +14,23 @@ const mockArticle = () => ({
   update: jest.fn()
 })
 
+const mockRedisAdapter = () => ({
+  refreshTags: jest.fn()
+})
+
 describe('Article-UpdateArticle', () => {
   let handler: UpdateArticleHandler
   let articleRepository: Mock<IArticleRepository>
+  let redisAdapter: Mock<IRedisAdapter>
 
   beforeEach(() => {
     articleRepository = mockArticleRepository()
+    redisAdapter = mockRedisAdapter()
 
-    handler = new UpdateArticleHandler(articleRepository as IArticleRepository)
+    handler = new UpdateArticleHandler(
+      articleRepository as IArticleRepository,
+      redisAdapter as IRedisAdapter
+    )
   })
 
   describe('TEST', () => {

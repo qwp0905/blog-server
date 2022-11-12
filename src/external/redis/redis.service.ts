@@ -10,4 +10,8 @@ export class RedisService {
   async getCache(key: string) {
     return await this.redisCache.get(key)
   }
+
+  async deleteCache(key: string) {
+    await this.redisCache.del(key)
+  }
 }
