@@ -9,5 +9,5 @@ export const TypeOrmConfig: DataSourceOptions = {
   database: process.env.DATABASE_NAME,
   entities: ['{dist/**/*.entity.js,src/**/*.entity.ts}'],
   entitySkipConstructor: true,
-  synchronize: false
+  synchronize: true
 }
