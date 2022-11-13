@@ -2,7 +2,7 @@ import { Http400Exception } from './http.exception'
 
 export class Validator {
   string(param?: unknown): string {
-    if (!param || typeof param !== 'string') {
+    if (typeof param !== 'string') {
       throw new Http400Exception(`${param} must be string`)
     }
     return param
@@ -48,7 +48,7 @@ export class Validator {
   }
 
   enum(param: unknown, list: string[]): string {
-    if (!param || typeof param !== 'string') {
+    if (typeof param !== 'string') {
       throw new Http400Exception(`${param} must be enum ${list.join(',')}`)
     }
 

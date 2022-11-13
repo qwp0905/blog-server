@@ -21,7 +21,7 @@ describe('Validator', () => {
     })
 
     it('4. ""', () => {
-      expect(() => validator.string('')).toThrowError()
+      expect(validator.string('')).toEqual('')
     })
 
     it('5. 정상 검증', () => {
