@@ -13,6 +13,8 @@ services:
     container_name: web-server
     volumes:
       - ./src:/app/src
+      - ./.env:/app/.env
+      - ./.env.development:/app/.env.development
     environment:
       - REDIS_HOST=redis_server
       - DATABASE_HOST=postgres_server
