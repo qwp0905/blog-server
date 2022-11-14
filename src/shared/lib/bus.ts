@@ -1,5 +1,5 @@
-import { ICommand, ICommandHandler } from '../interfaces/command'
-import { IQuery, IQueryHandler } from '../interfaces/query'
+import { ICommand, ICommandHandler, ICommandResult } from '../interfaces/command'
+import { IQuery, IQueryHandler, IQueryResult } from '../interfaces/query'
 
 export class CommandBus {
   private handlers: Map<string, ICommandHandler> = new Map()
@@ -14,7 +14,9 @@ export class CommandBus {
     console.log('Command Handlers registered')
   }
 
-  async execute<T extends ICommand>(command: T) {
+  async execute<T extends ICommand, TResult extends ICommandResult = any>(
+    command: T
+  ): Promise<TResult> {
     const handler = this.handlers.get(command.key)
     if (!handler) {
       throw new Error('register handler')
@@ -37,7 +39,9 @@ export class QueryBus {
     console.log('Query Handlers registered')
   }
 
-  async execute<T extends IQuery>(query: T) {
+  async execute<T extends IQuery, TResult extends IQueryResult = any>(
+    query: T
+  ): Promise<TResult> {
     const handler = this.handlers.get(query.key)
     if (!handler) {
       throw new Error('register handler')
