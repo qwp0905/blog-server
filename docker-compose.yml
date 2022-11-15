@@ -1,6 +1,16 @@
 version: '3.7'
-
+# Nginx 추가해 개발환경과 운영환경 일치
 services:
+  proxy:
+    depends_on:
+      - web-server
+    image: nginx:alpine
+    ports:
+      - 8090:80
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
+    container_name: web-proxy
+
   web-server:
     depends_on:
       - redis_server
