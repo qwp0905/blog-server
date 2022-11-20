@@ -55,9 +55,7 @@ sudo docker run -d \
 
 sleep 10
 
-EXISTS_CURRENT=$(curl -I localhost:${PORT} |& grep HTTP)
-
-if [ -z "$EXISTS_CURRENT" ]; then
+if [ -z "$(curl -I localhost:${PORT} |& grep HTTP)" ]; then
   sudo docker rm -f web-server-${CURRENT}
   exit 1
 else
