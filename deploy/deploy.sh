@@ -55,10 +55,9 @@ sudo docker run -d \
 
 sleep 10
 
-EXISTS_CURRENT=$(sudo docker exec proxy curl -I ${HOST}:${PORT})
-REQUEST=$(echo "$EXISTS_CURRENT" | grep HTTP)
+EXISTS_CURRENT=$(curl -I ${HOST}:${PORT} |& grep HTTP)
 
-if [ -z "$REQUEST" ]; then
+if [ -z "$EXISTS_CURRENT" ]; then
   sudo docker rm -f web-server-${CURRENT}
   exit 1
 else
