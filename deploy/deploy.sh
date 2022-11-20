@@ -48,9 +48,6 @@ else
   PREV_PORT="8080"
 fi
 
-sudo docker exec proxy \
-  sed -i "s/${HOST}:${PORT} down/${HOST}:${PORT}/" ${NGINX_CONF}
-
 sudo docker run -d \
                 --pull=always \
                 -p ${PORT}:3001 \
@@ -65,6 +62,8 @@ if [ -z "$(curl -I localhost:${PORT} |& grep HTTP)" ]; then
   sudo docker rm -f web-server-${CURRENT}
   exit 1
 else
+  sudo docker exec proxy \
+    sed -i "s/${HOST}:${PORT} down/${HOST}:${PORT}/" ${NGINX_CONF}
   sudo docker exec proxy \
     sed -i "s/${HOST}:${PREV_PORT}/${HOST}:${PREV_PORT} down/" ${NGINX_CONF}
   sudo docker exec proxy \
