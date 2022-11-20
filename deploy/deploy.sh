@@ -1,6 +1,7 @@
 #!/bin/bash
 
 HOST=host.docker.internal
+NGINX_CONF=/etc/nginx/nginx.conf
 
 # Docker Network 실행
 if [ -z "$(sudo docker network ls | grep www)" ]; then
@@ -39,11 +40,16 @@ if [ -z "$(sudo docker ps | grep blue)" ]; then
   PREVIOUS="green"
   CURRENT="blue"
   PORT="8080"
+  PREV_PORT="8081"
 else
   PREVIOUS="blue"
   CURRENT="green"
   PORT="8081"
+  PREV_PORT="8080"
 fi
+
+sudo docker exec proxy \
+  sudo sed -i "s/${HOST}:${PORT} down/${HOST}:${PORT}/" ${NGINX_CONF}
 
 sudo docker run -d \
                 --pull=always \
@@ -59,6 +65,10 @@ if [ -z "$(curl -I localhost:${PORT} |& grep HTTP)" ]; then
   sudo docker rm -f web-server-${CURRENT}
   exit 1
 else
+  sudo docker exec proxy \
+    sed -i "s/${HOST}:${PREV_PORT}/${HOST}:${PREV_PORT} down/" ${NGINX_CONF}
+  sudo docker exec proxy \
+    nginx -s reload
   sudo docker stop web-server-${PREVIOUS}
   sudo docker rm web-server-${PREVIOUS}
 fi
