@@ -69,6 +69,7 @@ else
     sed -i "s/${HOST}:${PREV_PORT}/${HOST}:${PREV_PORT} down/" ${NGINX_CONF}
   sudo docker exec proxy \
     nginx -s reload
+
   sudo docker stop -t 10 web-server-${PREVIOUS}
   sudo docker rm web-server-${PREVIOUS}
 fi
