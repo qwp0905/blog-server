@@ -49,7 +49,7 @@ else
 fi
 
 sudo docker exec proxy \
-  sudo sed -i "s/${HOST}:${PORT} down/${HOST}:${PORT}/" ${NGINX_CONF}
+  sed -i "s/${HOST}:${PORT} down/${HOST}:${PORT}/" ${NGINX_CONF}
 
 sudo docker run -d \
                 --pull=always \
