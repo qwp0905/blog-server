@@ -53,9 +53,10 @@ export class App {
   listen() {
     const port = process.env.PORT ?? 3001
 
-    const server = this.app.listen(port, () => {
-      console.log(`App listening on the port ${port}`)
-    })
-    server.timeout = 60 * 60 * 1000
+    this.app
+      .listen(port, () => {
+        console.log(`App listening on the port ${port}`)
+      })
+      .setTimeout(60 * 1000)
   }
 }

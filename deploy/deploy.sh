@@ -4,7 +4,7 @@ HOST=host.docker.internal
 
 # Docker Network 실행
 if [ -z "$(sudo docker network ls | grep www)" ]; then
-    sudo docker network create -d bridge www
+  sudo docker network create -d bridge www
 fi
 
 # Nginx
