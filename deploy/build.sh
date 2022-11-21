@@ -1,17 +1,18 @@
 #!/bin/bash
 
 DOCKER_REGISTRY="qwp1216/blog-server"
-COMMIT_HASH="$(git log -1 —format=%H | head -n 1)"
+COMMIT_HASH="$(git log -1 -format=%H | head -n 1)"
 
 cp ${ENV} .
 cp ${KEY} .
 cp ${CERT} .
 
-EXISTS_DOCKER_IMAGES=$(docker images -q -f ${DOCKER_REGISTRY})
+EXISTS_SERVER=$(docker images -q -f reference=${DOCKER_REGISTRY})
+EXISTS_PROXY=$(docker images -q -f reference=${DOCKER_REGISTRY}-proxy)
 
 # execute docker script
-docker rmi -f "${EXISTS_DOCKER_IMAGES}"
-docker rmi -f "${EXISTS_DOCKER_IMAGES}-proxy"
+docker rmi -f "$EXISTS_SERVER"
+docker rmi -f "$EXISTS_PROXY"
 
 docker build --platform linux/amd64 \
 			       -t ${DOCKER_REGISTRY}-proxy:${COMMIT_HASH} \
