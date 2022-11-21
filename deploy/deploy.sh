@@ -18,7 +18,7 @@ if [ -z "$(sudo docker ps | grep proxy)" ]; then
                   --add-host ${HOST}:host-gateway \
                   --restart=unless-stopped \
                   -v /home/ubuntu/log:/var/log/nginx/ \
-                  qwp1216/blog-server-proxy
+                  qwp1216/blog-server-proxy:latest
 fi
 
 
@@ -54,24 +54,29 @@ sudo docker run -d \
                 --name web-server-${CURRENT} \
                 --net www \
                 --restart=unless-stopped \
-                qwp1216/blog-server
+                qwp1216/blog-server:latest
 
 sleep 10
 
-if [ -z "$(curl -I localhost:${PORT} |& grep HTTP)" ]; then
-  sudo docker rm -f web-server-${CURRENT}
-  exit 1
-else
-  sudo docker exec proxy \
-    sed -i "s/${HOST}:${PORT} down/${HOST}:${PORT}/" ${NGINX_CONF}
-  sudo docker exec proxy \
-    sed -i "s/${HOST}:${PREV_PORT}/${HOST}:${PREV_PORT} down/" ${NGINX_CONF}
-  sudo docker exec proxy \
-    nginx -s reload
+for COUNT in {1..10}
+do
+  if [ -n "$(curl -I localhost:${PORT} |& grep HTTP)"]; then
+    sudo docker exec proxy \
+      sed -i "s/${HOST}:${PORT} down/${HOST}:${PORT}/" ${NGINX_CONF}
+    sudo docker exec proxy \
+      sed -i "s/${HOST}:${PREV_PORT}/${HOST}:${PREV_PORT} down/" ${NGINX_CONF}
+    sudo docker exec proxy \
+      nginx -s reload
 
-  sudo docker stop -t 10 web-server-${PREVIOUS}
-  sudo docker rm web-server-${PREVIOUS}
-fi
+    sudo docker stop -t 10 web-server-${PREVIOUS}
+    sudo docker rm web-server-${PREVIOUS}
+    
+    sudo docker images --quiet --filter=dangling=true | sudo xargs --no-run-if-empty docker rmi
+    exit 0
+  fi
+done
 
-
+sudo docker rm -f web-server-${CURRENT}
 sudo docker images --quiet --filter=dangling=true | sudo xargs --no-run-if-empty docker rmi
+
+exit 1
