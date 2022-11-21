@@ -73,6 +73,8 @@ do
     
     sudo docker images --quiet --filter=dangling=true | sudo xargs --no-run-if-empty docker rmi
     exit 0
+  else
+    sleep 3
   fi
 done
 
