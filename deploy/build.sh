@@ -24,4 +24,4 @@ docker push -a ${DOCKER_REGISTRY}-proxy
 docker rmi ${DOCKER_REGISTRY}:${COMMIT_HASH}
 docker rmi ${DOCKER_REGISTRY}-proxy:${COMMIT_HASH}
 
-sudo docker images --quiet --filter=dangling=true | sudo xargs --no-run-if-empty docker rmi
+docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi
