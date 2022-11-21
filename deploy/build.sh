@@ -27,3 +27,5 @@ docker tag ${DOCKER_REGISTRY}-proxy:${COMMIT_HASH} ${DOCKER_REGISTRY}-proxy:late
 docker login -u qwp1216 -p ${DOCKER_PWD}
 docker push -a ${DOCKER_REGISTRY}
 docker push -a ${DOCKER_REGISTRY}-proxy
+
+sudo docker images --quiet --filter=dangling=true | sudo xargs --no-run-if-empty docker rmi
