@@ -1,7 +1,8 @@
 #!/bin/bash
 
-HOST=host.docker.internal
-NGINX_CONF=/etc/nginx/nginx.conf
+HOST="host.docker.internal"
+NGINX_CONF="/etc/nginx/nginx.conf"
+DOCKER_REGISTRY="qwp1216/blog-server"
 
 # Docker Network 실행
 if [ -z "$(sudo docker network ls | grep www)" ]; then
@@ -18,7 +19,7 @@ if [ -z "$(sudo docker ps | grep proxy)" ]; then
                   --add-host ${HOST}:host-gateway \
                   --restart=unless-stopped \
                   -v /home/ubuntu/log:/var/log/nginx/ \
-                  qwp1216/blog-server-proxy:latest
+                  ${DOCKER_REGISTRY}-proxy:latest
 fi
 
 
@@ -54,7 +55,7 @@ sudo docker run -d \
                 --name web-server-${CURRENT} \
                 --net www \
                 --restart=unless-stopped \
-                qwp1216/blog-server:latest
+                ${DOCKER_REGISTRY}:latest
 
 sleep 10
 
