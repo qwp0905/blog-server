@@ -61,7 +61,7 @@ sleep 10
 
 for COUNT in {1..10}
 do
-  if [ -n "$(curl -I localhost:${PORT} |& grep HTTP)" ]; then
+  if [ -n "$(curl -sI localhost:${PORT} | grep HTTP)" ]; then
     sudo docker exec proxy \
       sed -i "s/${HOST}:${PORT} down/${HOST}:${PORT}/" ${NGINX_CONF}
     sudo docker exec proxy \
