@@ -20,7 +20,6 @@ docker build --platform linux/amd64 \
 docker tag ${DOCKER_REGISTRY}:${COMMIT_HASH} ${DOCKER_REGISTRY}:latest
 docker tag ${DOCKER_REGISTRY}-proxy:${COMMIT_HASH} ${DOCKER_REGISTRY}-proxy:latest
 
-docker login -u qwp1216 -p ${DOCKER_PWD}
 docker push -a ${DOCKER_REGISTRY}
 docker push -a ${DOCKER_REGISTRY}-proxy
 
