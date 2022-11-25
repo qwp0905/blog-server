@@ -7,8 +7,8 @@ cp ${ENV} .
 cp ${KEY} .
 cp ${CERT} .
 
-docker rmi -f "$(docker images -q -f reference=${DOCKER_REGISTRY})"
-docker rmi -f "$(docker images -q -f reference=${DOCKER_REGISTRY}-proxy)"
+docker rmi -f $(docker images -q -f reference=${DOCKER_REGISTRY})
+docker rmi -f $(docker images -q -f reference=${DOCKER_REGISTRY}-proxy)
 
 docker build --platform linux/amd64 \
 			       -t ${DOCKER_REGISTRY}-proxy:${COMMIT_HASH} \

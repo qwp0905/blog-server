@@ -45,7 +45,6 @@ import { HeartController } from './modules/heart/interface/heart.controller'
 import { UploadHandler } from './modules/upload/application/upload.handler'
 import { AmazonAdapter } from './modules/upload/infrastructure/amazon.adapter'
 import { UploadController } from './modules/upload/interface/upload.controller'
-import { IController } from './shared/interfaces/controller.interface'
 import { CommandBus, QueryBus } from './shared/lib/bus'
 import { Validator } from './shared/lib/validator'
 import { ProfileController } from './modules/profile/interface/profile.controller'
@@ -53,6 +52,7 @@ import { ProfileFactory } from './modules/profile/domain/profile.factory'
 import { ProfileRepository } from './modules/profile/infrastructure/repositories/profile.repository'
 import { FindProfileHandler } from './modules/profile/application/query/find-profile.handler'
 import { UpdateProfileHandler } from './modules/profile/application/command/update-profile.handler'
+import { App } from './app'
 
 // External ###############################################################
 export const DATABASE = new DataSource(TypeOrmConfig)
@@ -212,13 +212,13 @@ queryBus.registerHandlers([
   ...profileQueryHandlers
 ])
 
-const Container: IController[] = [
+const app = new App([
   accountController,
   articleController,
   commentController,
   heartController,
   uploadController,
   profileController
-]
+])
 
-export default Container
+export default app

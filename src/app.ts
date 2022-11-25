@@ -10,14 +10,14 @@ import { DATABASE, REDIS_CACHE } from './container'
 export class App {
   private app: express.Application
 
-  constructor() {
+  constructor(private readonly controllers: IController[]) {
     this.app = express()
   }
 
-  initializeControllers(controllers: IController[]) {
+  initializeControllers() {
     const router = express.Router()
 
-    controllers.forEach((controller) => {
+    this.controllers.forEach((controller) => {
       router.use(controller.router)
     })
 

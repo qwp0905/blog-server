@@ -3,18 +3,14 @@ dotenv.config()
 dotenv.config({
   path: process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production'
 })
-
-import { App } from './app'
+import app from './container'
 
 const bootstrap = async () => {
-  const app = new App()
-
   await app.initializeDatabase()
 
   app.initializeMiddleWares()
 
-  const Container = (await import('./container')).default
-  app.initializeControllers(Container)
+  app.initializeControllers()
 
   app.initializeErrorMiddleware()
 
