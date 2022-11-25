@@ -12,10 +12,10 @@ docker rmi -f "$(docker images -q -f reference=${DOCKER_REGISTRY}-proxy)"
 
 docker build --platform linux/amd64 \
 			       -t ${DOCKER_REGISTRY}-proxy:${COMMIT_HASH} \
-             -f Dockerfile.proxy .
+             -f proxy.Dockerfile .
 docker build --platform linux/amd64 \
              -t ${DOCKER_REGISTRY}:${COMMIT_HASH} \
-             -f Dockerfile.prod .
+             -f prod.Dockerfile .
 
 docker tag ${DOCKER_REGISTRY}:${COMMIT_HASH} ${DOCKER_REGISTRY}:latest
 docker tag ${DOCKER_REGISTRY}-proxy:${COMMIT_HASH} ${DOCKER_REGISTRY}-proxy:latest
