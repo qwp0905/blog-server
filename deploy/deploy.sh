@@ -58,6 +58,7 @@ sudo docker run -d \
                 ${DOCKER_REGISTRY}:latest
 
 sleep 10
+sudo docker images --quiet --filter=dangling=true | sudo xargs --no-run-if-empty docker rmi
 
 for COUNT in {1..10}
 do
@@ -72,7 +73,6 @@ do
     sudo docker stop -t 10 web-server-${PREVIOUS}
     sudo docker rm web-server-${PREVIOUS}
     
-    sudo docker images --quiet --filter=dangling=true | sudo xargs --no-run-if-empty docker rmi
     exit 0
   else
     sleep 3
@@ -80,6 +80,4 @@ do
 done
 
 sudo docker rm -f web-server-${CURRENT}
-sudo docker images --quiet --filter=dangling=true | sudo xargs --no-run-if-empty docker rmi
-
 exit 1
