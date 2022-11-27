@@ -10,6 +10,7 @@ describe('Account-Account', () => {
   beforeEach(() => {
     properties = {
       id: 123123,
+      origin: 'local',
       email: 'email@email.com',
       nickname: 'nickname',
       role: 'admin',

@@ -35,6 +35,7 @@ describe('Account-Factory', () => {
       properties = {
         id: 123123,
         email: 'email@email.com',
+        origin: 'local',
         nickname: 'nickname',
         role: 'admin',
         password: 'hashed_password',

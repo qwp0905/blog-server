@@ -6,7 +6,7 @@ export class AccountFactory {
     email: string,
     password: string,
     nickname: string,
-    origin?: AccountOrigin
+    origin: AccountOrigin = 'local'
   ): IAccount {
     return new Account({ email, nickname, password, origin })
   }
