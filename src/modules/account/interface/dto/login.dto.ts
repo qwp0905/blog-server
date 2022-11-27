@@ -1,4 +1,4 @@
-import { Role } from '../../../../@types/account'
+import { AccountRole } from '../../../../@types/account'
 
 export class LoginDto {
   email: string
@@ -9,7 +9,7 @@ export class LoginResponse {
   id: number
   email: string
   nickname: string
-  role: Role
+  role: AccountRole
   created_at: Date
   access_token: string
   refresh_token: string

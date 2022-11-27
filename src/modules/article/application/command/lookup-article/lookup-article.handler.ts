@@ -1,6 +1,6 @@
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
 import { IArticleRepository } from '../../../domain/article.repository.interface'
-import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
+import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interface'
 import {
   ILookupArticleCommand,
   LookupArticleCommand,

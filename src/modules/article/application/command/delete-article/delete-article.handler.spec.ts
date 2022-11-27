@@ -1,7 +1,7 @@
 import { Mock } from '../../../../../@types/test'
 import { IArticle } from '../../../domain/article'
 import { IArticleRepository } from '../../../domain/article.repository.interface'
-import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
+import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interface'
 import { DeleteArticleCommand, IDeleteArticleCommand } from './delete-article.command'
 import { DeleteArticleHandler } from './delete-article.handler'
 

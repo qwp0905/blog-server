@@ -3,7 +3,7 @@ import { IQueryHandler } from '../../../../../shared/interfaces/query'
 import { ArticleTagMapEntity } from '../../../infrastructure/entities/article-tag-map.entity'
 import { ArticleEntity } from '../../../infrastructure/entities/article.entity'
 import { TagEntity } from '../../../infrastructure/entities/tag.entity'
-import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
+import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interface'
 import {
   FindTagsQuery,
   FindTagsResult,

@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt'
-import { Role } from '../../../@types/account'
+import { AccountOrigin, AccountRole } from '../../../@types/account'
 import {
   Http400Exception,
   Http403Exception,
@@ -14,10 +14,11 @@ export interface IAccountEssentialProperties {
 
 export interface IAccountOptionalProperties {
   id?: number
-  role?: Role
+  role?: AccountRole
   created_at?: Date
   updated_at?: Date
   refresh_token?: string | null
+  origin?: AccountOrigin
 }
 
 export interface IAccountProperties
@@ -26,7 +27,7 @@ export interface IAccountProperties
 
 export interface IAccount {
   comparePassword(password: string): void
-  compareRole(role: Role): void
+  compareRole(role: AccountRole): void
   hashPassword(): void
   login(refresh_token: string): void
   logout(): void
@@ -39,7 +40,8 @@ export class Account implements IAccount {
   private email: string
   private password: string
   private nickname: string
-  private role: Role = 'guest'
+  private role: AccountRole = 'guest'
+  private origin: AccountOrigin = 'local'
   private refresh_token = null
   private created_at: Date
   private updated_at: Date
@@ -54,7 +56,7 @@ export class Account implements IAccount {
     }
   }
 
-  compareRole(role: Role) {
+  compareRole(role: AccountRole) {
     if (role === 'admin' && this.role !== 'admin') {
       throw new Http403Exception('권한이 없습니다.')
     }
@@ -95,7 +97,8 @@ export class Account implements IAccount {
       role: this.role,
       refresh_token: this.refresh_token,
       created_at: this.created_at,
-      updated_at: this.updated_at
+      updated_at: this.updated_at,
+      origin: this.origin
     }
   }
 }

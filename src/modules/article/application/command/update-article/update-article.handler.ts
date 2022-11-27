@@ -1,7 +1,7 @@
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
 import { Http404Exception } from '../../../../../shared/lib/http.exception'
 import { IArticleRepository } from '../../../domain/article.repository.interface'
-import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
+import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interface'
 import {
   IUpdateArticleCommand,
   UpdateArticleCommand,

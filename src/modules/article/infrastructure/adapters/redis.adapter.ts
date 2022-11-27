@@ -1,6 +1,6 @@
 import { RedisService } from '../../../../external/redis/redis.service'
 import { FindTagsResult } from '../../application/query/find-tags/find-tags.query'
-import { IRedisAdapter } from '../../interface/adapter/redis.adapter.interface'
+import { IRedisAdapter } from '../../interface/adapters/redis.adapter.interface'
 
 const TAG_KEY = 'TAG_KEY'
 

@@ -1,7 +1,7 @@
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
 import { ArticleFactory } from '../../../domain/article.factory'
 import { IArticleRepository } from '../../../domain/article.repository.interface'
-import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
+import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interface'
 import {
   CreateArticleCommand,
   CREATE_ARTICLE,

@@ -26,7 +26,7 @@ import { FindArticleAllHandler } from './modules/article/application/query/find-
 import { FindArticleDetailHandler } from './modules/article/application/query/find-detail/find-article-detail.handler'
 import { FindTagsHandler } from './modules/article/application/query/find-tags/find-tags.handler'
 import { ArticleFactory } from './modules/article/domain/article.factory'
-import { RedisAdapter } from './modules/article/infrastructure/adapter/redis.adapter'
+import { RedisAdapter } from './modules/article/infrastructure/adapters/redis.adapter'
 import { ArticleRepository } from './modules/article/infrastructure/repositories/article.repository'
 import { ArticleController } from './modules/article/interface/article.controller'
 import { CreateCommentHandler } from './modules/comment/application/command/create-comment/create-comment.handler'

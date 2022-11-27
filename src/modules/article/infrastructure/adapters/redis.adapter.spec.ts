@@ -1,6 +1,6 @@
 import { Mock } from '../../../../@types/test'
 import { RedisService } from '../../../../external/redis/redis.service'
-import { IRedisAdapter } from '../../interface/adapter/redis.adapter.interface'
+import { IRedisAdapter } from '../../interface/adapters/redis.adapter.interface'
 import { RedisAdapter } from './redis.adapter'
 
 const mockRedisService = () => ({

@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { Role } from '../../../../@types/account'
+import { AccountOrigin, AccountRole } from '../../../../@types/account'
 import { ArticleEntity } from '../../../article/infrastructure/entities/article.entity'
 import { HeartEntity } from '../../../heart/infrastructure/entities/heart.entity'
 
@@ -26,7 +26,10 @@ export class AccountEntity {
   nickname: string
 
   @Column({ type: 'enum', enum: ['admin', 'guest'], default: 'guest' })
-  role: Role
+  role: AccountRole
+
+  @Column({ type: 'enum', enum: ['local'], default: 'local' })
+  origin: AccountOrigin
 
   @Column({ default: null })
   refresh_token: string | null

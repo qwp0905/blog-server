@@ -1,11 +1,11 @@
 import { RequestHandler, Router } from 'express'
 import * as passport from 'passport'
-import { Role } from '../@types/account'
+import { AccountRole } from '../@types/account'
 import { jwtStrategy } from '../container'
 import { IAccount, IAccountProperties } from '../modules/account/domain/account'
 
 const roleGuard =
-  (role?: Role): RequestHandler =>
+  (role?: AccountRole): RequestHandler =>
   (req, _, next) => {
     if (!role) {
       return next()
@@ -18,7 +18,7 @@ const roleGuard =
   }
 
 interface AuthOptions {
-  role?: Role
+  role?: AccountRole
   key?: keyof IAccountProperties
 }
 
@@ -33,15 +33,17 @@ const userSelector =
     return next()
   }
 
+const passportMiddleware: RequestHandler = (req, res, next) => {
+  const origin = req.header('x-account-origin')
+
+  return passport
+    .use('local', jwtStrategy)
+    .authenticate(origin, { session: false, failWithError: true })(req, res, next)
+}
+
 export const Auth = (options?: AuthOptions): RequestHandler => {
   const router = Router()
 
-  router.use(
-    passport
-      .use('jwt', jwtStrategy)
-      .authenticate('jwt', { session: false, failWithError: true }),
-    roleGuard(options?.role),
-    userSelector(options?.key)
-  )
+  router.use(passportMiddleware, roleGuard(options?.role), userSelector(options?.key))
   return router
 }

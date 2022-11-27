@@ -1,1 +1,3 @@
-export type Role = 'admin' | 'guest'
+export type AccountRole = 'admin' | 'guest'
+
+export type AccountOrigin = 'local'

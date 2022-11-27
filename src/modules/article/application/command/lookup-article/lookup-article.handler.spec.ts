@@ -1,6 +1,6 @@
 import { Mock } from '../../../../../@types/test'
 import { IArticleRepository } from '../../../domain/article.repository.interface'
-import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
+import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interface'
 import { ILookupArticleCommand, LookupArticleCommand } from './lookup-article.command'
 import { LookupArticleHandler } from './lookup-article.handler'
 

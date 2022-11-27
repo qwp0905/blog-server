@@ -62,6 +62,7 @@ describe('Account-Login', () => {
         email: 'email@email.com',
         nickname: 'nickname',
         role: 'admin',
+        origin: 'local',
         created_at,
         access_token: 'access_token',
         refresh_token: 'refresh_token'
@@ -70,6 +71,7 @@ describe('Account-Login', () => {
       account = mockAccount()
       account_properties = {
         id: 123123,
+        origin: 'local',
         email: 'email@email.com',
         nickname: 'nickname',
         role: 'admin',

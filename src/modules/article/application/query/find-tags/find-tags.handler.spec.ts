@@ -1,6 +1,6 @@
 import { DataSource, SelectQueryBuilder } from 'typeorm'
 import { Mock } from '../../../../../@types/test'
-import { IRedisAdapter } from '../../../interface/adapter/redis.adapter.interface'
+import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interface'
 import { FindTagsHandler } from './find-tags.handler'
 import { FindTagsQuery, IFindTagsQuery } from './find-tags.query'
 

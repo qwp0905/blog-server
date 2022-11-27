@@ -1,5 +1,5 @@
 import { ICommandHandler } from '../../../shared/interfaces/command'
-import { IAmazonAdapter } from '../interface/adapter/amazon.adapter.interface'
+import { IAmazonAdapter } from '../interface/adapters/amazon.adapter.interface'
 import { IUploadCommand, UploadCommand, UPLOAD_IMAGE } from './upload.command'
 
 export class UploadHandler implements ICommandHandler<UploadCommand, string> {
