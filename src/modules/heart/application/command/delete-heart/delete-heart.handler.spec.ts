@@ -4,12 +4,12 @@ import { IHeartRepository } from '../../../domain/heart.repository.interface'
 import { DeleteHeartCommand, IDeleteHeartCommand } from './delete-heart.command'
 import { DeleteHeartHandler } from './delete-heart.handler'
 
-const mockHeartRepository = () => ({
+const mockHeartRepository = (): Mock<IHeartRepository> => ({
   findOneByIds: jest.fn(),
   deleteOne: jest.fn()
 })
 
-const mockHeart = () => ({})
+const mockHeart = (): Mock<IHeart> => ({})
 
 describe('Heart-DeleteHeart', () => {
   let handler: DeleteHeartHandler

@@ -7,11 +7,11 @@ import {
   IFindArticleDetailQuery
 } from './find-article-detail.query'
 
-const mockDataSource = () => ({
+const mockDataSource = (): Mock<DataSource> => ({
   createQueryBuilder: jest.fn()
 })
 
-const mockQueryBuilder = () => ({
+const mockQueryBuilder = (): Mock<SelectQueryBuilder<any>> => ({
   select: jest.fn().mockReturnThis(),
   addSelect: jest.fn(),
   innerJoin: jest.fn().mockReturnThis(),

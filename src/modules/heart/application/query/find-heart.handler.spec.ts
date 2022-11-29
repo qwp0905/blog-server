@@ -4,11 +4,11 @@ import { HeartEntity } from '../../infrastructure/entities/heart.entity'
 import { FindHeartHandler } from './find-heart.handler'
 import { FindHeartQuery, IFindHeartQuery } from './find-heart.query'
 
-const mockDataSource = () => ({
+const mockDataSource = (): Mock<DataSource> => ({
   createQueryBuilder: jest.fn()
 })
 
-const mockQueryBuilder = () => ({
+const mockQueryBuilder = (): Mock<SelectQueryBuilder<any>> => ({
   select: jest.fn().mockReturnThis(),
   from: jest.fn().mockReturnThis(),
   where: jest.fn().mockReturnThis(),

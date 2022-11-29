@@ -5,16 +5,16 @@ import { IHeartRepository } from '../../../domain/heart.repository.interface'
 import { CreateHeartCommand, ICreateHeartCommand } from './create-heart.command'
 import { CreateHeartHandler } from './create-heart.handler'
 
-const mockHeartRepository = () => ({
+const mockHeartRepository = (): Mock<IHeartRepository> => ({
   findOneByIds: jest.fn(),
   insertOne: jest.fn()
 })
 
-const mockHeartFactory = () => ({
+const mockHeartFactory = (): Mock<HeartFactory> => ({
   create: jest.fn()
 })
 
-const mockHeart = () => ({})
+const mockHeart = (): Mock<IHeart> => ({})
 
 describe('Heart-CreateHeart', () => {
   let handler: CreateHeartHandler

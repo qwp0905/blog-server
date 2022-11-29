@@ -4,12 +4,12 @@ import { ICommentRepository } from '../../../domain/comment.repository.interface
 import { IUpdateCommentCommand, UpdateCommentCommand } from './update-comment.command'
 import { UpdateCommentHandler } from './update-comment.handler'
 
-const mockCommentRepository = () => ({
+const mockCommentRepository = (): Mock<ICommentRepository> => ({
   findOneById: jest.fn(),
   updateOne: jest.fn()
 })
 
-const mockComment = () => ({
+const mockComment = (): Mock<IComment> => ({
   update: jest.fn()
 })
 

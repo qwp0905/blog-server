@@ -6,16 +6,16 @@ import { IAccountRepository } from '../../../domain/account.repository.interface
 import { ILoginCommand, LoginCommand, LoginResult } from './login.command'
 import { LoginHandler } from './login.handler'
 
-const mockAccountRepository = () => ({
+const mockAccountRepository = (): Mock<IAccountRepository> => ({
   findOneByEmail: jest.fn(),
   updateOne: jest.fn()
 })
 
-const mockCommandBus = () => ({
+const mockCommandBus = (): Mock<CommandBus> => ({
   execute: jest.fn()
 })
 
-const mockAccount = () => ({
+const mockAccount = (): Mock<IAccount> => ({
   comparePassword: jest.fn(),
   properties: jest.fn(),
   login: jest.fn()

@@ -22,7 +22,7 @@ export class UpdateArticleHandler implements ICommandHandler<UpdateArticleComman
     content,
     tags
   }: IUpdateArticleCommand): Promise<void> {
-    const article = await this.articleRepository.findOneById(article_id, account_id)
+    const article = await this.articleRepository.findOneByIds(article_id, account_id)
 
     if (!article) {
       throw new Http404Exception('게시물을 찾을 수 없습니다.')

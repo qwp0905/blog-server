@@ -13,15 +13,15 @@ jest.mock('../../../middlewares/auth.middleware', () => ({
   })
 }))
 
-const mockCommandBus = () => ({
+const mockCommandBus = (): Mock<CommandBus> => ({
   execute: jest.fn()
 })
 
-const mockQueryBus = () => ({
+const mockQueryBus = (): Mock<QueryBus> => ({
   execute: jest.fn()
 })
 
-const mockValidator = () => ({
+const mockValidator = (): Mock<Validator> => ({
   numberPipe: jest.fn().mockImplementation((a) => +a)
 })
 

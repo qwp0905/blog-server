@@ -5,17 +5,17 @@ import { IAccountRepository } from '../../../domain/account.repository.interface
 import { CreateAccountCommand, ICreateAccountCommand } from './create-account.command'
 import { CreateAccountHandler } from './create-account.handler'
 
-const mockAccountRepository = () => ({
+const mockAccountRepository = (): Mock<IAccountRepository> => ({
   findOneByEmail: jest.fn(),
   findOneByNickname: jest.fn(),
   insertOne: jest.fn()
 })
 
-const mockAccountFactory = () => ({
+const mockAccountFactory = (): Mock<AccountFactory> => ({
   create: jest.fn()
 })
 
-const mockAccount = () => ({
+const mockAccount = (): Mock<IAccount> => ({
   hashPassword: jest.fn()
 })
 

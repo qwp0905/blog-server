@@ -5,15 +5,15 @@ import { ICommentRepository } from '../../../domain/comment.repository.interface
 import { CreateCommentCommand, ICreateCommentCommand } from './create-comment.command'
 import { CreateCommentHandler } from './create-comment.handler'
 
-const mockCommentFactory = () => ({
+const mockCommentFactory = (): Mock<CommentFactory> => ({
   create: jest.fn()
 })
 
-const mockCommentRepository = () => ({
+const mockCommentRepository = (): Mock<ICommentRepository> => ({
   insertOne: jest.fn()
 })
 
-const mockComment = () => ({})
+const mockComment = (): Mock<IComment> => ({})
 
 describe('Comment-CreateComment', () => {
   let handler: CreateCommentHandler

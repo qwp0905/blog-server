@@ -14,7 +14,7 @@ export class ArticleRepository implements IArticleRepository {
     private readonly articleFactory: ArticleFactory
   ) {}
 
-  async findOneById(id: number, account_id: number): Promise<IArticle> {
+  async findOneByIds(id: number, account_id: number): Promise<IArticle> {
     const entity = await this.dataSource
       .createQueryBuilder()
       .select('A.id', 'id')
@@ -36,6 +36,16 @@ export class ArticleRepository implements IArticleRepository {
       .where('A.id = :id', { id })
       .andWhere('A.account_id = :account_id', { account_id })
       .groupBy('A.id')
+      .getRawOne()
+    return this.entityToModel(entity)
+  }
+
+  async findOneByArticleId(id: number): Promise<IArticle> {
+    const entity = await this.dataSource
+      .createQueryBuilder()
+      .select('*')
+      .from(ArticleEntity, 'article')
+      .where('id = :id', { id })
       .getRawOne()
     return this.entityToModel(entity)
   }

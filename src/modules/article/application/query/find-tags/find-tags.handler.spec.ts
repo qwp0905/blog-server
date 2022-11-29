@@ -4,11 +4,11 @@ import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interfa
 import { FindTagsHandler } from './find-tags.handler'
 import { FindTagsQuery, IFindTagsQuery } from './find-tags.query'
 
-const mockDataSource = () => ({
+const mockDataSource = (): Mock<DataSource> => ({
   createQueryBuilder: jest.fn()
 })
 
-const mockQueryBuilder = () => ({
+const mockQueryBuilder = (): Mock<SelectQueryBuilder<any>> => ({
   select: jest.fn().mockReturnThis(),
   addSelect: jest.fn(),
   innerJoin: jest.fn().mockReturnThis(),
@@ -23,7 +23,7 @@ const mockQueryBuilder = () => ({
   getRawOne: jest.fn()
 })
 
-const mockRedisAdapter = () => ({
+const mockRedisAdapter = (): Mock<IRedisAdapter> => ({
   getTags: jest.fn(),
   setTags: jest.fn()
 })

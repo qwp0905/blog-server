@@ -4,12 +4,12 @@ import { ICommentRepository } from '../../../domain/comment.repository.interface
 import { DeleteCommentCommand, IDeleteCommentCommand } from './delete-comment.command'
 import { DeleteCommentHandler } from './delete-comment.handler'
 
-const mockCommentRepository = () => ({
+const mockCommentRepository = (): Mock<ICommentRepository> => ({
   findOneById: jest.fn(),
   deleteOne: jest.fn()
 })
 
-const mockComment = () => ({})
+const mockComment = (): Mock<IComment> => ({})
 
 describe('Comment-DeleteComment', () => {
   let handler: DeleteCommentHandler

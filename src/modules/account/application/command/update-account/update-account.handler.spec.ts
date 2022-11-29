@@ -4,12 +4,12 @@ import { IAccountRepository } from '../../../domain/account.repository.interface
 import { IUpdateAccountCommand, UpdateAccountCommand } from './update-account.command'
 import { UpdateAccountHandler } from './update-account.handler'
 
-const mockAccountRepository = () => ({
+const mockAccountRepository = (): Mock<IAccountRepository> => ({
   findOneByNickname: jest.fn(),
   updateOne: jest.fn()
 })
 
-const mockAccount = () => ({
+const mockAccount = (): Mock<IAccount> => ({
   update: jest.fn()
 })
 

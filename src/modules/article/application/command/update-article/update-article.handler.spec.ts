@@ -5,16 +5,16 @@ import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interfa
 import { IUpdateArticleCommand, UpdateArticleCommand } from './update-article.command'
 import { UpdateArticleHandler } from './update-article.handler'
 
-const mockArticleRepository = () => ({
-  findOneById: jest.fn(),
+const mockArticleRepository = (): Mock<IArticleRepository> => ({
+  findOneByIds: jest.fn(),
   updateOne: jest.fn()
 })
 
-const mockArticle = () => ({
+const mockArticle = (): Mock<IArticle> => ({
   update: jest.fn()
 })
 
-const mockRedisAdapter = () => ({
+const mockRedisAdapter = (): Mock<IRedisAdapter> => ({
   refreshTags: jest.fn()
 })
 
@@ -43,15 +43,15 @@ describe('Article-UpdateArticle', () => {
 
       article = mockArticle()
 
-      articleRepository.findOneById.mockResolvedValue(article)
+      articleRepository.findOneByIds.mockResolvedValue(article)
     })
 
     it('1. 존재하지 않는 게시물에 대해 에러 반환', async () => {
-      articleRepository.findOneById.mockResolvedValueOnce(undefined)
+      articleRepository.findOneByIds.mockResolvedValueOnce(undefined)
 
       const result = handler.execute(command)
       await expect(result).rejects.toThrowError()
-      expect(articleRepository.findOneById).toBeCalledWith(456, 123)
+      expect(articleRepository.findOneByIds).toBeCalledWith(456, 123)
       expect(article.update).not.toBeCalled()
       expect(articleRepository.updateOne).not.toBeCalled()
     })
@@ -59,7 +59,7 @@ describe('Article-UpdateArticle', () => {
     it('2. 정상 업데이트', async () => {
       const result = handler.execute(command)
       await expect(result).resolves.toBeUndefined()
-      expect(articleRepository.findOneById).toBeCalledWith(456, 123)
+      expect(articleRepository.findOneByIds).toBeCalledWith(456, 123)
       expect(article.update).toBeCalledWith('title', 'content', ['tag1', 'tag2'])
       expect(articleRepository.updateOne).toBeCalledWith(article)
     })

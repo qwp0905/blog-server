@@ -3,7 +3,7 @@ import { RedisService } from '../../../../external/redis/redis.service'
 import { IRedisAdapter } from '../../interface/adapters/redis.adapter.interface'
 import { RedisAdapter } from './redis.adapter'
 
-const mockRedisService = () => ({
+const mockRedisService = (): Mock<RedisService> => ({
   getCache: jest.fn(),
   setCache: jest.fn()
 })

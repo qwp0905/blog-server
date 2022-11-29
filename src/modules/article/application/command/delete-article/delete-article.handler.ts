@@ -16,7 +16,7 @@ export class DeleteArticleHandler implements ICommandHandler<DeleteArticleComman
   ) {}
 
   async execute({ article_id, account_id }: IDeleteArticleCommand): Promise<void> {
-    const article = await this.articleRepository.findOneById(article_id, account_id)
+    const article = await this.articleRepository.findOneByIds(article_id, account_id)
 
     if (!article) {
       throw new Http404Exception('삭제할 게시물이 없습니다.')

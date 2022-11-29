@@ -4,11 +4,11 @@ import { IAccountRepository } from '../../../domain/account.repository.interface
 import { FindAccountCommand, IFindAccountCommand } from './find-account.command'
 import { FindAccountHandler } from './find-account.handler'
 
-const mockAccountRepository = () => ({
+const mockAccountRepository = (): Mock<IAccountRepository> => ({
   findOneById: jest.fn()
 })
 
-const mockAccount = () => ({})
+const mockAccount = (): Mock<IAccount> => ({})
 
 describe('Account-FindAccount', () => {
   let handler: FindAccountHandler

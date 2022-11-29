@@ -4,11 +4,11 @@ import { IAccountRepository } from '../../../domain/account.repository.interface
 import { ILogoutCommand, LogoutCommand } from './logout.command'
 import { LogoutHandler } from './logout.handler'
 
-const mockAccountRepository = () => ({
+const mockAccountRepository = (): Mock<IAccountRepository> => ({
   updateOne: jest.fn()
 })
 
-const mockAccount = () => ({
+const mockAccount = (): Mock<IAccount> => ({
   logout: jest.fn()
 })
 

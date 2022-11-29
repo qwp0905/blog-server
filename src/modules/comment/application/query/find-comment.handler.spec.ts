@@ -6,11 +6,11 @@ import { CommentEntity } from '../../infrastructure/entities/comment.entity'
 import { FindCommentHandler } from './find-comment.handler'
 import { FindCommentQuery, IFindCommentQuery } from './find-comment.query'
 
-const mockDataSource = () => ({
+const mockDataSource = (): Mock<DataSource> => ({
   createQueryBuilder: jest.fn()
 })
 
-const mockQueryBuilder = () => ({
+const mockQueryBuilder = (): Mock<SelectQueryBuilder<any>> => ({
   select: jest.fn().mockReturnThis(),
   addSelect: jest.fn().mockReturnThis(),
   innerJoin: jest.fn().mockReturnThis(),

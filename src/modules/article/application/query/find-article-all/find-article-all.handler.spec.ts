@@ -4,11 +4,11 @@ import { PAGE_LIMIT } from '../../../../../shared/constants/article'
 import { FindArticleAllHandler } from './find-article-all.handler'
 import { FindArticleAllQuery, IFindArticleAllQuery } from './find-article-all.query'
 
-const mockDataSource = () => ({
+const mockDataSource = (): Mock<DataSource> => ({
   createQueryBuilder: jest.fn()
 })
 
-const mockQueryBuilder = () => ({
+const mockQueryBuilder = (): Mock<SelectQueryBuilder<any>> => ({
   select: jest.fn().mockReturnThis(),
   addSelect: jest.fn(),
   innerJoin: jest.fn().mockReturnThis(),

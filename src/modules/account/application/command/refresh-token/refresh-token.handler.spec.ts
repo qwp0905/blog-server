@@ -5,11 +5,11 @@ import { IAccount, IAccountProperties } from '../../../domain/account'
 import { IRefreshTokenCommand, RefreshTokenCommand } from './refresh-token.command'
 import { RefreshTokenHandler } from './refresh-token.handler'
 
-const mockCommandBus = () => ({
+const mockCommandBus = (): Mock<CommandBus> => ({
   execute: jest.fn()
 })
 
-const mockAccount = () => ({
+const mockAccount = (): Mock<IAccount> => ({
   properties: jest.fn()
 })
 

@@ -6,17 +6,17 @@ import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interfa
 import { CreateArticleCommand, ICreateArticleCommand } from './create-article.command'
 import { CreateArticleHandler } from './create-article.handler'
 
-const mockArticleRepository = () => ({
+const mockArticleRepository = (): Mock<IArticleRepository> => ({
   insertOne: jest.fn()
 })
 
-const mockArticleFactory = () => ({
+const mockArticleFactory = (): Mock<ArticleFactory> => ({
   create: jest.fn()
 })
 
-const mockArticle = () => ({})
+const mockArticle = (): Mock<IArticle> => ({})
 
-const mockRedisAdapter = () => ({
+const mockRedisAdapter = (): Mock<IRedisAdapter> => ({
   refreshTags: jest.fn()
 })
 

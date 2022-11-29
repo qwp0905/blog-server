@@ -2,9 +2,10 @@ import Redis from 'ioredis'
 import { Mock } from '../../@types/test'
 import { RedisService } from './redis.service'
 
-const mockRedis = () => ({
+const mockRedis = (): Mock<Redis> => ({
   setex: jest.fn(),
-  get: jest.fn()
+  get: jest.fn(),
+  del: jest.fn()
 })
 
 describe('External-Redis', () => {
@@ -31,5 +32,11 @@ describe('External-Redis', () => {
 
     await expect(result).resolves.toEqual('value')
     expect(redisCache.get).toBeCalledWith('key')
+  })
+
+  it('3. deleteCache TEST', async () => {
+    const result = service.deleteCache('key')
+    await expect(result).resolves.toBeUndefined()
+    expect(redisCache.del).toBeCalledWith('key')
   })
 })
