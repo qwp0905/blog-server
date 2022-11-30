@@ -9,6 +9,6 @@ export class AmazonAdapter implements IAmazonAdapter {
     file: Express.Multer.File,
     options?: Partial<PutObjectAclRequest>
   ): Promise<string> {
-    return this.s3Service.uploadFile('ootd13image', file, options)
+    return this.s3Service.uploadFile(process.env.AWS_BLOG_IMAGE_BUCKET, file, options)
   }
 }
