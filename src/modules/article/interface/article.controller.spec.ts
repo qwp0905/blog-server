@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import { Mock } from '../../../@types/test'
 import { CommandBus, QueryBus } from '../../../shared/lib/bus'
-import { Validator } from '../../../shared/lib/validator'
+import { ValidationPipe } from '../../../shared/lib/validation-pipe'
 import { FindArticleAllQuery } from '../application/query/find-article-all/find-article-all.query'
 import { FindArticleDetailQuery } from '../application/query/find-detail/find-article-detail.query'
 import { FindTagsQuery } from '../application/query/find-tags/find-tags.query'
@@ -21,7 +21,7 @@ const mockQueryBus = (): Mock<QueryBus> => ({
   execute: jest.fn()
 })
 
-const mockValidator = (): Mock<Validator> => ({
+const mockValidationPipe = (): Mock<ValidationPipe> => ({
   numberOptionalPipe: jest.fn().mockImplementation((a) => +a),
   string: jest.fn().mockImplementation((a) => a),
   stringOptional: jest.fn().mockImplementation((a) => a),
@@ -33,17 +33,17 @@ describe('Article-Controller', () => {
   let controller: ArticleController
   let commandBus: Mock<CommandBus>
   let queryBus: Mock<QueryBus>
-  let validator: Mock<Validator>
+  let validationPipe: Mock<ValidationPipe>
 
   beforeEach(() => {
     commandBus = mockCommandBus()
     queryBus = mockQueryBus()
-    validator = mockValidator()
+    validationPipe = mockValidationPipe()
 
     controller = new ArticleController(
       commandBus as unknown as CommandBus,
       queryBus as unknown as QueryBus,
-      validator as Validator
+      validationPipe as ValidationPipe
     )
   })
 
@@ -70,9 +70,9 @@ describe('Article-Controller', () => {
 
       await expect(result).resolves.toEqual('result')
       expect(queryBus.execute).toBeCalledWith(query)
-      expect(validator.numberOptionalPipe).toBeCalledWith('2')
-      expect(validator.numberOptionalPipe).toBeCalledWith('1')
-      expect(validator.stringOptional).toBeCalledWith('tag')
+      expect(validationPipe.numberOptionalPipe).toBeCalledWith('2')
+      expect(validationPipe.numberOptionalPipe).toBeCalledWith('1')
+      expect(validationPipe.stringOptional).toBeCalledWith('tag')
     })
   })
 
@@ -97,7 +97,7 @@ describe('Article-Controller', () => {
 
       await expect(result).resolves.toEqual({ abc: 123 })
       expect(queryBus.execute).toBeCalledWith(query)
-      expect(validator.numberPipe).toBeCalledWith('123')
+      expect(validationPipe.numberPipe).toBeCalledWith('123')
     })
   })
 
@@ -122,7 +122,7 @@ describe('Article-Controller', () => {
 
       await expect(result).resolves.toEqual(['tags'])
       expect(queryBus.execute).toBeCalledWith(query)
-      expect(validator.numberOptionalPipe).toBeCalledWith('123')
+      expect(validationPipe.numberOptionalPipe).toBeCalledWith('123')
     })
   })
 })

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { Mock } from '../../../@types/test'
 import { CommandBus, QueryBus } from '../../../shared/lib/bus'
-import { Validator } from '../../../shared/lib/validator'
+import { ValidationPipe } from '../../../shared/lib/validation-pipe'
 import { CreateCommentCommand } from '../application/command/create-comment/create-comment.command'
 import { DeleteCommentCommand } from '../application/command/delete-comment/delete-comment.command'
 import { UpdateCommentCommand } from '../application/command/update-comment/update-comment.command'
@@ -22,7 +22,7 @@ const mockQueryBus = (): Mock<QueryBus> => ({
   execute: jest.fn()
 })
 
-const mockValidator = (): Mock<Validator> => ({
+const mockValidationPipe = (): Mock<ValidationPipe> => ({
   numberOptionalPipe: jest.fn().mockImplementation((a) => +a),
   string: jest.fn().mockImplementation((a) => a),
   numberPipe: jest.fn().mockImplementation((a) => +a),
@@ -33,17 +33,17 @@ describe('Comment-Controller', () => {
   let controller: CommentController
   let commandBus: Mock<CommandBus>
   let queryBus: Mock<QueryBus>
-  let validator: Mock<Validator>
+  let validator: Mock<ValidationPipe>
 
   beforeEach(() => {
     commandBus = mockCommandBus()
     queryBus = mockQueryBus()
-    validator = mockValidator()
+    validator = mockValidationPipe()
 
     controller = new CommentController(
       commandBus as unknown as CommandBus,
       queryBus as unknown as QueryBus,
-      validator as Validator
+      validator as ValidationPipe
     )
   })
 

@@ -3,7 +3,7 @@ import { Auth } from '../../../middlewares/auth.middleware'
 import { IController } from '../../../shared/interfaces/controller.interface'
 import { CommandBus, QueryBus } from '../../../shared/lib/bus'
 import { Handler, Wrap } from '../../../shared/lib/request-handler'
-import { Validator } from '../../../shared/lib/validator'
+import { ValidationPipe } from '../../../shared/lib/validation-pipe'
 import { CreateArticleCommand } from '../application/command/create-article/create-article.command'
 import { DeleteArticleCommand } from '../application/command/delete-article/delete-article.command'
 import { LookupArticleCommand } from '../application/command/lookup-article/lookup-article.command'
@@ -23,7 +23,7 @@ export class ArticleController implements IController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly validator: Validator
+    private readonly validationPipe: ValidationPipe
   ) {
     const router = Router()
 
@@ -43,9 +43,9 @@ export class ArticleController implements IController {
     const { page, id, tag }: FindArticleDto = req.query
 
     const query = new FindArticleAllQuery(
-      this.validator.numberOptionalPipe(page),
-      this.validator.stringOptional(tag),
-      this.validator.numberOptionalPipe(id)
+      this.validationPipe.numberOptionalPipe(page),
+      this.validationPipe.stringOptional(tag),
+      this.validationPipe.numberOptionalPipe(id)
     )
     return await this.queryBus.execute(query)
   }
@@ -53,14 +53,14 @@ export class ArticleController implements IController {
   findDetail: Handler = async (req): Promise<FindArticleDetailResponse> => {
     const article_id = req.params.id
 
-    const query = new FindArticleDetailQuery(this.validator.numberPipe(article_id))
+    const query = new FindArticleDetailQuery(this.validationPipe.numberPipe(article_id))
     return await this.queryBus.execute(query)
   }
 
   findTags: Handler = async (req) => {
     const { id: account_id } = req.query
 
-    const query = new FindTagsQuery(this.validator.numberOptionalPipe(account_id))
+    const query = new FindTagsQuery(this.validationPipe.numberOptionalPipe(account_id))
     return await this.queryBus.execute(query)
   }
 
@@ -69,7 +69,7 @@ export class ArticleController implements IController {
     const account_id = req.user as number
 
     const command = new LookupArticleCommand(
-      this.validator.numberPipe(article_id),
+      this.validationPipe.numberPipe(article_id),
       account_id
     )
     await this.commandBus.execute(command)
@@ -81,9 +81,9 @@ export class ArticleController implements IController {
 
     const command = new CreateArticleCommand(
       account_id,
-      this.validator.string(title),
-      this.validator.string(content),
-      this.validator.stringArray(tags, 5)
+      this.validationPipe.string(title),
+      this.validationPipe.string(content),
+      this.validationPipe.stringArray(tags, 5)
     )
     await this.commandBus.execute(command)
   }
@@ -95,10 +95,10 @@ export class ArticleController implements IController {
 
     const command = new UpdateArticleCommand(
       account_id,
-      this.validator.numberPipe(article_id),
-      this.validator.string(title),
-      this.validator.string(content),
-      this.validator.stringArray(tags, 5)
+      this.validationPipe.numberPipe(article_id),
+      this.validationPipe.string(title),
+      this.validationPipe.string(content),
+      this.validationPipe.stringArray(tags, 5)
     )
     await this.commandBus.execute(command)
   }
@@ -109,7 +109,7 @@ export class ArticleController implements IController {
 
     const command = new DeleteArticleCommand(
       account_id,
-      this.validator.numberPipe(article_id)
+      this.validationPipe.numberPipe(article_id)
     )
     await this.commandBus.execute(command)
   }

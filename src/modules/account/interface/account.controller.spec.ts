@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import { Mock } from '../../../@types/test'
 import { CommandBus, QueryBus } from '../../../shared/lib/bus'
-import { Validator } from '../../../shared/lib/validator'
+import { ValidationPipe } from '../../../shared/lib/validation-pipe'
 import { CreateAccountCommand } from '../application/command/create-account/create-account.command'
 import { LoginCommand } from '../application/command/login/login.command'
 import { LogoutCommand } from '../application/command/logout/logout.command'
@@ -24,7 +24,7 @@ const mockQueryBus = (): Mock<QueryBus> => ({
   execute: jest.fn()
 })
 
-const mockValidator = (): Mock<Validator> => ({
+const mockValidationPipe = (): Mock<ValidationPipe> => ({
   string: jest.fn().mockImplementation((a) => a),
   stringOptional: jest.fn().mockImplementation((a) => a),
   numberPipe: jest.fn().mockImplementation((a) => +a)
@@ -34,17 +34,17 @@ describe('Account-Controller', () => {
   let controller: AccountController
   let commandBus: Mock<CommandBus>
   let queryBus: Mock<QueryBus>
-  let validator: Mock<Validator>
+  let validationPipe: Mock<ValidationPipe>
 
   beforeEach(() => {
     commandBus = mockCommandBus()
     queryBus = mockQueryBus()
-    validator = mockValidator()
+    validationPipe = mockValidationPipe()
 
     controller = new AccountController(
       commandBus as unknown as CommandBus,
       queryBus as unknown as QueryBus,
-      validator as Validator
+      validationPipe as ValidationPipe
     )
   })
 
@@ -69,9 +69,9 @@ describe('Account-Controller', () => {
 
       await expect(result).resolves.toBeUndefined()
       expect(commandBus.execute).toBeCalledWith(command)
-      expect(validator.string).toBeCalledWith('email')
-      expect(validator.string).toBeCalledWith('password')
-      expect(validator.string).toBeCalledWith('nickname')
+      expect(validationPipe.string).toBeCalledWith('email')
+      expect(validationPipe.string).toBeCalledWith('password')
+      expect(validationPipe.string).toBeCalledWith('nickname')
     })
   })
 
@@ -97,8 +97,8 @@ describe('Account-Controller', () => {
 
       await expect(result).resolves.toBe('result')
       expect(commandBus.execute).toBeCalledWith(command)
-      expect(validator.string).toBeCalledWith('email')
-      expect(validator.string).toBeCalledWith('password')
+      expect(validationPipe.string).toBeCalledWith('email')
+      expect(validationPipe.string).toBeCalledWith('password')
     })
   })
 
@@ -147,8 +147,8 @@ describe('Account-Controller', () => {
 
       await expect(result).resolves.toBeUndefined()
       expect(commandBus.execute).toBeCalledWith(command)
-      expect(validator.stringOptional).toBeCalledWith('nickname')
-      expect(validator.stringOptional).toBeCalledWith('password')
+      expect(validationPipe.stringOptional).toBeCalledWith('nickname')
+      expect(validationPipe.stringOptional).toBeCalledWith('password')
     })
   })
 

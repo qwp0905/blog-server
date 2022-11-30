@@ -46,7 +46,7 @@ import { UploadHandler } from './modules/upload/application/upload.handler'
 import { AmazonAdapter } from './modules/upload/infrastructure/amazon.adapter'
 import { UploadController } from './modules/upload/interface/upload.controller'
 import { CommandBus, QueryBus } from './shared/lib/bus'
-import { Validator } from './shared/lib/validator'
+import { ValidationPipe } from './shared/lib/validation-pipe'
 import { ProfileController } from './modules/profile/interface/profile.controller'
 import { ProfileFactory } from './modules/profile/domain/profile.factory'
 import { ProfileRepository } from './modules/profile/infrastructure/repositories/profile.repository'
@@ -65,7 +65,7 @@ const commandBus = new CommandBus()
 const queryBus = new QueryBus()
 
 // Utils ###############################################################
-const validator = new Validator()
+const validationPipe = new ValidationPipe()
 
 // External modules ###############################################################
 const redisService = new RedisService(REDIS_CACHE)
@@ -187,12 +187,12 @@ const profileCommandHandlers = [updateProfileHandler]
 const profileQueryHandlers = [findProfileHandler]
 
 // Controllers ###############################################################
-const accountController = new AccountController(commandBus, queryBus, validator)
-const articleController = new ArticleController(commandBus, queryBus, validator)
-const commentController = new CommentController(commandBus, queryBus, validator)
-const heartController = new HeartController(commandBus, queryBus, validator)
-const uploadController = new UploadController(commandBus, validator)
-const profileController = new ProfileController(commandBus, queryBus, validator)
+const accountController = new AccountController(commandBus, queryBus, validationPipe)
+const articleController = new ArticleController(commandBus, queryBus, validationPipe)
+const commentController = new CommentController(commandBus, queryBus, validationPipe)
+const heartController = new HeartController(commandBus, queryBus, validationPipe)
+const uploadController = new UploadController(commandBus, validationPipe)
+const profileController = new ProfileController(commandBus, queryBus, validationPipe)
 
 // Register Handlers ###############################################################
 commandBus.registerHandlers([

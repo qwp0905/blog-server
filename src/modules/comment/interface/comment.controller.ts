@@ -3,7 +3,7 @@ import { Auth } from '../../../middlewares/auth.middleware'
 import { IController } from '../../../shared/interfaces/controller.interface'
 import { CommandBus, QueryBus } from '../../../shared/lib/bus'
 import { Handler, Wrap } from '../../../shared/lib/request-handler'
-import { Validator } from '../../../shared/lib/validator'
+import { ValidationPipe } from '../../../shared/lib/validation-pipe'
 import { CreateCommentCommand } from '../application/command/create-comment/create-comment.command'
 import { DeleteCommentCommand } from '../application/command/delete-comment/delete-comment.command'
 import { UpdateCommentCommand } from '../application/command/update-comment/update-comment.command'
@@ -19,7 +19,7 @@ export class CommentController implements IController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly validator: Validator
+    private readonly validationPipe: ValidationPipe
   ) {
     const router = Router()
 
@@ -36,8 +36,8 @@ export class CommentController implements IController {
     const { article_id, page }: FindCommentsDto = req.query
 
     const query = new FindCommentQuery(
-      this.validator.numberPipe(article_id),
-      this.validator.numberOptionalPipe(page)
+      this.validationPipe.numberPipe(article_id),
+      this.validationPipe.numberOptionalPipe(page)
     )
     return await this.queryBus.execute(query)
   }
@@ -48,8 +48,8 @@ export class CommentController implements IController {
 
     const command = new CreateCommentCommand(
       account_id,
-      this.validator.number(article_id),
-      this.validator.string(content)
+      this.validationPipe.number(article_id),
+      this.validationPipe.string(content)
     )
     await this.commandBus.execute(command)
   }
@@ -60,7 +60,7 @@ export class CommentController implements IController {
 
     const command = new DeleteCommentCommand(
       account_id,
-      this.validator.numberPipe(comment_id)
+      this.validationPipe.numberPipe(comment_id)
     )
     await this.commandBus.execute(command)
   }
@@ -72,8 +72,8 @@ export class CommentController implements IController {
 
     const command = new UpdateCommentCommand(
       account_id,
-      this.validator.numberPipe(comment_id),
-      this.validator.string(content)
+      this.validationPipe.numberPipe(comment_id),
+      this.validationPipe.string(content)
     )
     await this.commandBus.execute(command)
   }

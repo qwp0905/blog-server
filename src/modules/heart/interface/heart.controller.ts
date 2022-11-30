@@ -3,7 +3,7 @@ import { Auth } from '../../../middlewares/auth.middleware'
 import { IController } from '../../../shared/interfaces/controller.interface'
 import { CommandBus, QueryBus } from '../../../shared/lib/bus'
 import { Handler, Wrap } from '../../../shared/lib/request-handler'
-import { Validator } from '../../../shared/lib/validator'
+import { ValidationPipe } from '../../../shared/lib/validation-pipe'
 import { CreateHeartCommand } from '../application/command/create-heart/create-heart.command'
 import { DeleteHeartCommand } from '../application/command/delete-heart/delete-heart.command'
 import { FindHeartQuery } from '../application/query/find-heart.query'
@@ -15,7 +15,7 @@ export class HeartController implements IController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly validator: Validator
+    private readonly validationPipe: ValidationPipe
   ) {
     const router = Router()
 
@@ -31,7 +31,10 @@ export class HeartController implements IController {
     const article_id = req.params.id
     const account_id = req.user as number
 
-    const query = new FindHeartQuery(account_id, this.validator.numberPipe(article_id))
+    const query = new FindHeartQuery(
+      account_id,
+      this.validationPipe.numberPipe(article_id)
+    )
     return await this.queryBus.execute(query)
   }
 
@@ -41,7 +44,7 @@ export class HeartController implements IController {
 
     const command = new CreateHeartCommand(
       account_id,
-      this.validator.numberPipe(article_id)
+      this.validationPipe.numberPipe(article_id)
     )
     await this.commandBus.execute(command)
   }
@@ -52,7 +55,7 @@ export class HeartController implements IController {
 
     const command = new DeleteHeartCommand(
       account_id,
-      this.validator.numberPipe(article_id)
+      this.validationPipe.numberPipe(article_id)
     )
     await this.commandBus.execute(command)
   }

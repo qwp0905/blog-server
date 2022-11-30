@@ -1,8 +1,10 @@
 import { RequestHandler, Router } from 'express'
 import * as passport from 'passport'
-import { AccountRole } from '../@types/account'
+import { AccountOrigin, AccountRole } from '../@types/account'
 import { jwtStrategy } from '../container'
 import { IAccount, IAccountProperties } from '../modules/account/domain/account'
+import { ACCOUNT_ORIGIN } from '../shared/constants/account'
+import { Http403Exception } from '../shared/lib/http.exception'
 
 const roleGuard =
   (role?: AccountRole): RequestHandler =>
@@ -34,7 +36,10 @@ const userSelector =
   }
 
 const passportMiddleware: RequestHandler = (req, res, next) => {
-  const origin = req.header('x-account-origin')
+  const origin = req.header('x-account-origin') as AccountOrigin
+  if (!~ACCOUNT_ORIGIN.indexOf(origin)) {
+    throw new Http403Exception('인증 정보가 없습니다.')
+  }
 
   return passport
     .use('local', jwtStrategy)

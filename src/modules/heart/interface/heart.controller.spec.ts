@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import { Mock } from '../../../@types/test'
 import { CommandBus, QueryBus } from '../../../shared/lib/bus'
-import { Validator } from '../../../shared/lib/validator'
+import { ValidationPipe } from '../../../shared/lib/validation-pipe'
 import { CreateHeartCommand } from '../application/command/create-heart/create-heart.command'
 import { DeleteHeartCommand } from '../application/command/delete-heart/delete-heart.command'
 import { FindHeartQuery } from '../application/query/find-heart.query'
@@ -21,7 +21,7 @@ const mockQueryBus = (): Mock<QueryBus> => ({
   execute: jest.fn()
 })
 
-const mockValidator = (): Mock<Validator> => ({
+const mockValidationPipe = (): Mock<ValidationPipe> => ({
   numberPipe: jest.fn().mockImplementation((a) => +a)
 })
 
@@ -29,17 +29,17 @@ describe('Heart-Controller', () => {
   let controller: HeartController
   let commandBus: Mock<CommandBus>
   let queryBus: Mock<QueryBus>
-  let validator: Mock<Validator>
+  let validator: Mock<ValidationPipe>
 
   beforeEach(() => {
     commandBus = mockCommandBus()
     queryBus = mockQueryBus()
-    validator = mockValidator()
+    validator = mockValidationPipe()
 
     controller = new HeartController(
       commandBus as unknown as CommandBus,
       queryBus as unknown as QueryBus,
-      validator as Validator
+      validator as ValidationPipe
     )
   })
 

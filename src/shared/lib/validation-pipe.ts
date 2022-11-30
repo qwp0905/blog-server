@@ -1,6 +1,6 @@
 import { Http400Exception } from './http.exception'
 
-export class Validator {
+export class ValidationPipe {
   string(param?: unknown): string {
     if (typeof param !== 'string') {
       throw new Http400Exception(`${param} must be string`)

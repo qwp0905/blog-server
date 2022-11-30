@@ -3,7 +3,7 @@ import { Auth } from '../../../middlewares/auth.middleware'
 import { IController } from '../../../shared/interfaces/controller.interface'
 import { CommandBus, QueryBus } from '../../../shared/lib/bus'
 import { Handler, Wrap } from '../../../shared/lib/request-handler'
-import { Validator } from '../../../shared/lib/validator'
+import { ValidationPipe } from '../../../shared/lib/validation-pipe'
 import { UpdateProfileCommand } from '../application/command/update-profile.command'
 import { FindProfileQuery } from '../application/query/find-profile.query'
 
@@ -14,7 +14,7 @@ export class ProfileController implements IController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly validator: Validator
+    private readonly validationPipe: ValidationPipe
   ) {
     const router = Router()
 
@@ -34,7 +34,10 @@ export class ProfileController implements IController {
     const { content } = req.body
     const account_id = req.user as number
 
-    const command = new UpdateProfileCommand(account_id, this.validator.string(content))
+    const command = new UpdateProfileCommand(
+      account_id,
+      this.validationPipe.string(content)
+    )
 
     await this.commandBus.execute(command)
   }

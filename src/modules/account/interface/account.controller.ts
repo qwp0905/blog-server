@@ -12,7 +12,7 @@ import { Auth } from '../../../middlewares/auth.middleware'
 import { UpdateAccountDto } from './dto/update-account.dto'
 import { UpdateAccountCommand } from '../application/command/update-account/update-account.command'
 import { RefreshTokenCommand } from '../application/command/refresh-token/refresh-token.command'
-import { Validator } from '../../../shared/lib/validator'
+import { ValidationPipe } from '../../../shared/lib/validation-pipe'
 
 export class AccountController implements IController {
   readonly path = '/account'
@@ -21,7 +21,7 @@ export class AccountController implements IController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly validator: Validator
+    private readonly validationPipe: ValidationPipe
   ) {
     const router = Router()
 
@@ -39,9 +39,9 @@ export class AccountController implements IController {
     const { email, password, nickname }: CreateAccountDto = req.body
 
     const command = new CreateAccountCommand(
-      this.validator.string(email),
-      this.validator.string(password),
-      this.validator.string(nickname)
+      this.validationPipe.string(email),
+      this.validationPipe.string(password),
+      this.validationPipe.string(nickname)
     )
     await this.commandBus.execute(command)
   }
@@ -50,8 +50,8 @@ export class AccountController implements IController {
     const { email, password }: LoginDto = req.body
 
     const command = new LoginCommand(
-      this.validator.string(email),
-      this.validator.string(password)
+      this.validationPipe.string(email),
+      this.validationPipe.string(password)
     )
     return await this.commandBus.execute(command)
   }
@@ -69,8 +69,8 @@ export class AccountController implements IController {
 
     const command = new UpdateAccountCommand(
       account,
-      this.validator.stringOptional(nickname),
-      this.validator.stringOptional(password)
+      this.validationPipe.stringOptional(nickname),
+      this.validationPipe.stringOptional(password)
     )
     await this.commandBus.execute(command)
   }
