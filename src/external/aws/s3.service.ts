@@ -1,5 +1,4 @@
 import { S3 } from 'aws-sdk'
-import * as path from 'path'
 
 export class AwsS3Service {
   constructor(private readonly s3: S3) {}
@@ -7,6 +6,7 @@ export class AwsS3Service {
   async uploadFile(
     bucket: string,
     file: Express.Multer.File,
+    key: string,
     options?: Partial<S3.PutObjectAclRequest>
   ): Promise<string> {
     const { Location } = await this.s3
@@ -14,7 +14,7 @@ export class AwsS3Service {
         ...options,
         Bucket: bucket,
         Body: file.buffer,
-        Key: `${Date()}${path.extname(file.originalname)}`
+        Key: key
       })
       .promise()
     return Location
