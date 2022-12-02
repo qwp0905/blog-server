@@ -6,12 +6,14 @@ DOCKER_REGISTRY="qwp1216/blog-server"
 
 # Docker Network 실행
 if [ -z "$(sudo docker network ls | grep www)" ]; then
+  echo "Create docker network..."
   sudo docker network create -d bridge www
 fi
 
 # Nginx
 if [ -z "$(sudo docker ps | grep proxy)" ]; then
-  sudo docker rm -f proxy
+  echo "Create nginx proxy..."
+  sudo docker ps -aqf name=proxy | sudo docker rm -f
   sudo docker run -d \
                   --pull=always \
                   -p 443:443 \
@@ -25,7 +27,8 @@ fi
 
 # Redis 실행
 if [ -z "$(sudo docker ps | grep redis)" ]; then
-  sudo docker rm -f redis
+  echo "Create redis..."
+  sudo docker ps -aqf name=redis | sudo docker rm -f
   sudo docker run -d \
                   -p 6379:6379 \
                   -v /home/ubuntu/redis-data:/data \
@@ -49,6 +52,8 @@ else
   PREV_PORT="8080"
 fi
 
+echo "Create server $CURRENT..."
+sudo docker ps -aqf name=web-server-${CURRENT} | sudo xargs --no-run-if-empty docker rm -f
 sudo docker run -d \
                 --pull=always \
                 -p ${PORT}:3001 \
@@ -61,7 +66,9 @@ sleep 10
 
 for COUNT in {1..10}
 do
+  echo "$COUNT trying..."
   if [ -n "$(curl -sI localhost:${PORT} | grep HTTP)" ]; then
+    echo "$CURRUNT succeed"
     sudo docker exec proxy \
       sed -i "s/${HOST}:${PORT} down/${HOST}:${PORT}/" ${NGINX_CONF}
     sudo docker exec proxy \
@@ -72,7 +79,7 @@ do
     sudo docker stop -t 10 web-server-${PREVIOUS}
     sudo docker rm web-server-${PREVIOUS}
     
-    sudo docker images --quiet --filter=dangling=true | sudo xargs --no-run-if-empty docker rmi
+    sudo docker images -qf dangling=true | sudo xargs --no-run-if-empty docker rmi -f
     exit 0
   else
     sleep 3
@@ -80,5 +87,6 @@ do
 done
 
 sudo docker rm -f web-server-${CURRENT}
-sudo docker images --quiet --filter=dangling=true | sudo xargs --no-run-if-empty docker rmi
+sudo docker images -qf dangling=true | sudo xargs --no-run-if-empty docker rmi -f
+echo "Fail to start server..."
 exit 1

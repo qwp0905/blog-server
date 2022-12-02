@@ -7,8 +7,8 @@ cp ${ENV} .
 cp ${KEY} .
 cp ${CERT} .
 
-docker rmi -f $(docker images -q -f reference=${DOCKER_REGISTRY})
-docker rmi -f $(docker images -q -f reference=${DOCKER_REGISTRY}-proxy)
+docker images -qf reference=${DOCKER_REGISTRY} | xargs --no-run-if-empty docker rmi -f
+docker images -qf reference=${DOCKER_REGISTRY}-proxy | xargs --no-run-if-empty docker rmi -f
 
 docker build --platform linux/amd64 \
 			       -t ${DOCKER_REGISTRY}-proxy:${COMMIT_HASH} \
@@ -25,4 +25,4 @@ docker login -u qwp1216 -p ${DOCKER_PWD}
 docker push -a ${DOCKER_REGISTRY}
 docker push -a ${DOCKER_REGISTRY}-proxy
 
-docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi
+docker images -qf dangling=true | xargs --no-run-if-empty docker rmi
