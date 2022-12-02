@@ -68,7 +68,7 @@ for COUNT in {1..10}
 do
   echo "$COUNT trying..."
   if [ -n "$(curl -sI localhost:${PORT} | grep HTTP)" ]; then
-    echo "$CURRUNT succeed"
+    echo "$CURRENT succeed"
     sudo docker exec proxy \
       sed -i "s/${HOST}:${PORT} down/${HOST}:${PORT}/" ${NGINX_CONF}
     sudo docker exec proxy \
