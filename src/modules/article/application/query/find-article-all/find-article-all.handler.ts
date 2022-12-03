@@ -26,7 +26,7 @@ export class FindArticleAllHandler
   }: IFindArticleAllQuery): Promise<FindArticleAllResult[]> {
     const offset = (page - 1) * PAGE_LIMIT
 
-    const result = await this.dataSource
+    return await this.dataSource
       .createQueryBuilder()
       .select('A.id', 'id')
       .addSelect('A.account_id', 'account_id')
@@ -71,7 +71,5 @@ export class FindArticleAllHandler
       .limit(PAGE_LIMIT + 1)
       .offset(offset)
       .execute()
-
-    return result
   }
 }

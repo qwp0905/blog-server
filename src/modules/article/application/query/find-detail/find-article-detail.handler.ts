@@ -21,7 +21,7 @@ export class FindArticleDetailHandler
   async execute({
     article_id
   }: IFindArticleDetailQuery): Promise<FindArticleDetailResult> {
-    const result = await this.dataSource
+    return await this.dataSource
       .createQueryBuilder()
       .select('A.id', 'id')
       .addSelect('A.account_id', 'account_id')
@@ -59,7 +59,5 @@ export class FindArticleDetailHandler
       .where('A.id = :article_id', { article_id })
       .groupBy('A.id')
       .getRawOne()
-
-    return result
   }
 }

@@ -10,13 +10,11 @@ export class FindProfileHandler
   constructor(private readonly dataSource: DataSource) {}
 
   async execute(): Promise<FindProfileResult> {
-    const result = await this.dataSource
+    return await this.dataSource
       .createQueryBuilder()
       .select('content')
       .from(ProfileEntity, 'profile')
       .where('id = 1')
       .getRawOne()
-
-    return result
   }
 }
