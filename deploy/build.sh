@@ -3,7 +3,7 @@
 COMMIT_HASH="$(git log -1 --format=%H | head -n 1)"
 
 echo $ENV >> ./.env
-echo $CERT >> ./certification.cert
+echo $CERT >> ./certification.crt
 echo $KEY >> ./private.key
 
 docker images -qf reference=${DOCKER_REGISTRY} | xargs --no-run-if-empty docker rmi -f
