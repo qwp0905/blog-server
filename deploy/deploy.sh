@@ -13,7 +13,7 @@ fi
 # Nginx
 if [ -z "$(sudo docker ps | grep proxy)" ]; then
   echo "Create nginx proxy..."
-  sudo docker ps -aqf name=proxy | sudo docker rm -f
+  sudo docker ps -aqf name=proxy | sudo xargs --no-run-if-empty docker rm -f
   sudo docker run -d \
                   --pull=always \
                   -p 443:443 \
@@ -28,7 +28,7 @@ fi
 # Redis 실행
 if [ -z "$(sudo docker ps | grep redis)" ]; then
   echo "Create redis..."
-  sudo docker ps -aqf name=redis | sudo docker rm -f
+  sudo docker ps -aqf name=redis | sudo xargs --no-run-if-empty docker rm -f
   sudo docker run -d \
                   -p 6379:6379 \
                   -v /home/ubuntu/redis-data:/data \
