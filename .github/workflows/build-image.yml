@@ -2,17 +2,15 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Run build script
-      run: /bin/bash ./deploy/build.sh
+      - uses: actions/checkout@v3
+      - name: Run build script
+        run: echo $(git log -1 --format=%H | head -n 1)
