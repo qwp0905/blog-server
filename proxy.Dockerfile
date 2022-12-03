@@ -2,7 +2,7 @@ FROM nginx:alpine
 
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 COPY ./private.key /etc/ssl/
-COPY ./cert.crt /etc/ssl/
+COPY ./certification.crt /etc/ssl/
 
 EXPOSE 443
 

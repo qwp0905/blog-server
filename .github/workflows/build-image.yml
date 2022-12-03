@@ -9,8 +9,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      ENV: ${{ secrets.ENV }}
+      CERT: ${{ secrets.CERT }}
+      KEY: ${{ secrets.KEY }}
+      DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+      DOCKER_PWD: ${{ secrets.DOCKER_PWD }}
     steps:
       - uses: actions/checkout@v3
       - name: Run build script
-        run: echo $(git log -1 --format=%H | head -n 1)
+        run: /bin/bash ./deploy/build.sh

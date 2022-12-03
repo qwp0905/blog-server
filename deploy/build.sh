@@ -1,11 +1,10 @@
 #!/bin/bash
 
-DOCKER_REGISTRY="qwp1216/blog-server"
 COMMIT_HASH="$(git log -1 --format=%H | head -n 1)"
 
-cp ${ENV} .
-cp ${KEY} .
-cp ${CERT} .
+echo $ENV >> ./.env
+echo $KEY >> ./certification.cert
+echo $CERT >> ./private.key
 
 docker images -qf reference=${DOCKER_REGISTRY} | xargs --no-run-if-empty docker rmi -f
 docker images -qf reference=${DOCKER_REGISTRY}-proxy | xargs --no-run-if-empty docker rmi -f
