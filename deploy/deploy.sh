@@ -88,6 +88,7 @@ do
     sudo docker images -qf reference=${DOCKER_REGISTRY} \
                        -f since=${DOCKER_REGISTRY}:${IMAGE_TAG} \
     | sudo xargs --no-run-if-empty docker rmi -f
+
     exit 0
   else
     sleep 3
