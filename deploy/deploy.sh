@@ -2,7 +2,8 @@
 
 HOST="host.docker.internal"
 NGINX_CONF="/etc/nginx/nginx.conf"
-DOCKER_REGISTRY="qwp1216/blog-server"
+
+echo "$DOCKER_REGISTRY $IMAGE_TAG version..."
 
 # Docker Network 실행
 if [ -z "$(sudo docker network ls | grep www)" ]; then
@@ -21,7 +22,7 @@ if [ -z "$(sudo docker ps | grep proxy)" ]; then
                   --add-host ${HOST}:host-gateway \
                   --restart=unless-stopped \
                   -v /home/ubuntu/log:/var/log/nginx/ \
-                  ${DOCKER_REGISTRY}-proxy:latest
+                  ${DOCKER_REGISTRY}-proxy:${IMAGE_TAG}
 fi
 
 
@@ -60,7 +61,7 @@ sudo docker run -d \
                 --name web-server-${CURRENT} \
                 --net www \
                 --restart=unless-stopped \
-                ${DOCKER_REGISTRY}:latest
+                ${DOCKER_REGISTRY}:${IMAGE_TAG}
 
 sleep 10
 
@@ -80,6 +81,10 @@ do
     sudo docker rm web-server-${PREVIOUS}
     
     sudo docker images -qf dangling=true | sudo xargs --no-run-if-empty docker rmi -f
+
+    sudo docker images -qf reference=${DOCKER_REGISTRY} \
+                       -f before=${DOCKER_REGISTRY}:${IMAGE_TAG} \
+    | sudo xargs --no-run-if-empty docker rmi -f
     exit 0
   else
     sleep 3
@@ -88,5 +93,7 @@ done
 
 sudo docker rm -f web-server-${CURRENT}
 sudo docker images -qf dangling=true | sudo xargs --no-run-if-empty docker rmi -f
+sudo docker rmi -f ${DOCKER_REGISTRY}:${IMAGE_TAG}
+
 echo "Fail to start server..."
 exit 1
