@@ -38,11 +38,13 @@ jobs:
       - name: Add Proxy Tag
         run: docker tag ${DOCKER_REGISTRY}-proxy:${GITHUB_SHA} ${DOCKER_REGISTRY}:latest
 
-      - name: Docker Login
-        run: docker login -u qwp1216 -p ${DOCKER_PWD}
+      - name: test
+        run: docker images
+      # - name: Docker Login
+      #   run: docker login -u qwp1216 -p ${DOCKER_PWD}
 
-      - name: Push Application Image
-        run: docker push -a ${DOCKER_REGISTRY}
+      # - name: Push Application Image
+      #   run: docker push -a ${DOCKER_REGISTRY}
 
-      - name: Push Proxy Image
-        run: docker push -a ${DOCKER_REGISTRY}-proxy
+      # - name: Push Proxy Image
+      #   run: docker push -a ${DOCKER_REGISTRY}-proxy
