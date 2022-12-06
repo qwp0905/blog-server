@@ -17,5 +17,13 @@ jobs:
       DOCKER_PWD: ${{ secrets.DOCKER_PWD }}
     steps:
       - uses: actions/checkout@v3
-      - name: Run build script
-        run: /bin/bash ./deploy/build.sh
+      # - name: Run build script
+      #   run: /bin/bash ./deploy/build.sh
+      - name: test1
+        run: echo "$ENV" > ./.env
+
+      - name: test2
+        run: ls | grep ".env"
+
+      - name: test3
+        run: cat ./.env
