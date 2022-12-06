@@ -22,8 +22,5 @@ jobs:
       - name: test1
         run: echo "$ENV" > ./.env
 
-      - name: test2
-        run: ls | grep ".env"
-
       - name: test3
         run: cat ./.env
