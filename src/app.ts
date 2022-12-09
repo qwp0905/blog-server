@@ -18,7 +18,7 @@ export class App {
     const router = express.Router()
 
     router.get('/', (_, res) => {
-      return DATABASE.isInitialized ? res.json() : res.status(500).json()
+      return res.json()
     })
 
     this.controllers.forEach((controller) => {
