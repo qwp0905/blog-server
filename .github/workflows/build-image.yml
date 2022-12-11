@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      KEY: ${{ secrets.KEY }}
+      ENV: ${{ secrets.ENV }}
       DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
       DOCKER_PWD: ${{ secrets.DOCKER_PWD }}
     steps:
