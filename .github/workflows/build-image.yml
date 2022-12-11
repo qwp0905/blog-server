@@ -10,8 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      ENV: ${{ secrets.ENV }}
-      CERT: ${{ secrets.CERT }}
       KEY: ${{ secrets.KEY }}
       DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
       DOCKER_PWD: ${{ secrets.DOCKER_PWD }}
@@ -20,29 +18,14 @@ jobs:
       - name: Copy env
         run: echo "$ENV" > ./.env
 
-      - name: Copy certification
-        run: echo "$CERT" > ./certification.crt
-
-      - name: Copy key
-        run: echo "$KEY" > ./private.key
-
       - name: Build Application
         run: docker build --platform linux/amd64 -t ${DOCKER_REGISTRY}:${GITHUB_SHA} -f prod.Dockerfile .
 
-      - name: Build Proxy
-        run: docker build --platform linux/amd64 -t ${DOCKER_REGISTRY}-proxy:${GITHUB_SHA} -f proxy.Dockerfile .
-
       - name: Add Application Tag
         run: docker tag ${DOCKER_REGISTRY}:${GITHUB_SHA} ${DOCKER_REGISTRY}:latest
-
-      - name: Add Proxy Tag
-        run: docker tag ${DOCKER_REGISTRY}-proxy:${GITHUB_SHA} ${DOCKER_REGISTRY}-proxy:latest
 
       - name: Docker Login
         run: docker login -u qwp1216 -p ${DOCKER_PWD}
 
       - name: Push Application Image
         run: docker push -a ${DOCKER_REGISTRY}
-
-      - name: Push Proxy Image
-        run: docker push -a ${DOCKER_REGISTRY}-proxy
