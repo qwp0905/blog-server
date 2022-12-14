@@ -19,7 +19,10 @@ jobs:
         run: echo "$ENV" > ./.env
 
       - name: Build Application
-        run: docker build --platform linux/amd64 -t ${DOCKER_REGISTRY}:${GITHUB_SHA} -f prod.Dockerfile .
+        run: |
+          docker build --platform linux/amd64 \
+                       -t ${DOCKER_REGISTRY}:${GITHUB_SHA} \
+                       -f prod.Dockerfile .
 
       - name: Add Application Tag
         run: docker tag ${DOCKER_REGISTRY}:${GITHUB_SHA} ${DOCKER_REGISTRY}:latest
