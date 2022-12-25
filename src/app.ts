@@ -39,7 +39,7 @@ export class App {
     this.app.use(
       express.json({ limit: '50mb' }),
       express.urlencoded({ extended: false }),
-      // cors({ credentials: true, origin: process.env.CLIENT_HOST }),
+      cors({ credentials: true, origin: process.env.CLIENT_HOST }),
       helmet(),
       cookieParser()
     )
