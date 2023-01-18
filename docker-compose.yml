@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.9"
 # Nginx 추가해 개발환경과 운영환경 일치
 services:
   proxy:
