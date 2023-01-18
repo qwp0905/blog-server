@@ -10,6 +10,15 @@ pipeline {
   }
 
   stages {
+    stage('Set Build Name') {
+      environment {
+        COMMIT_MESSAGE = "${sh(returnStdout: true, script: 'git log -1 --pretty=%B | head -n 1')}"
+      }
+      steps {
+        buildName("[$BUILD_NUMBER] $COMMIT_MESSAGE")
+      }
+    }
+
     stage('Configure Aws Credentials') {
       steps {
         container('aws-cli') {
