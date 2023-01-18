@@ -26,16 +26,6 @@ pipeline {
       }
     }
 
-    stage('Git') {
-      steps {
-        git(
-          url: 'https://github.com/qwp0905/blog-client.git',
-          credentialsId: 'github',
-          branch: 'main'
-        )
-      }
-    }
-
     stage('Build & Push') {
       environment {
         GIT_COMMIT = "${sh(returnStdout: true, script: 'git log -1 --format=%H | head -n 1')}"
