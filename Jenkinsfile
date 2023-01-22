@@ -64,7 +64,7 @@ pipeline {
     stage('Deploy') {
       steps {
         container('helm') {
-          sh('cat "image: $AWS_ECR_REGISTRY/$APP:$COMMIT_HASH"')
+          sh('cat "image: $AWS_ECR_REGISTRY/$APP:$COMMIT_HASH" >> helm/values.yml')
           sh('helm upgrade --install $APP oci://$AWS_ECR_REGISTRY/service-helm -f helm/values.yml')
         }
       }
