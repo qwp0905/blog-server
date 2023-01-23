@@ -73,13 +73,13 @@ pipeline {
 
   post {
     success {
-      slackSend(channel: 'testtest', color: 'good', message: "$BUILD_NAME")
+      slackSend(channel: 'testtest', color: 'good', message: "[$BUILD_NUMBER] $COMMIT_MESSAGE")
     }
     failure {
-      slackSend(channel: 'testtest', color: 'danger', message: "$BUILD_NAME")
+      slackSend(channel: 'testtest', color: 'danger', message: "[$BUILD_NUMBER] $COMMIT_MESSAGE")
     }
     unstable {
-      slackSend(channel: 'testtest', color: 'warning', message: "$BUILD_NAME")
+      slackSend(channel: 'testtest', color: 'warning', message: "[$BUILD_NUMBER] $COMMIT_MESSAGE")
     }
   }
 }
