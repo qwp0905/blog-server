@@ -10,7 +10,7 @@ pipeline {
     AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
     AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
     AWS_ECR_REGISTRY      = credentials('aws-ecr-registry')
-    MESSAGE               = "$JOB_NAME #$BUILD_NUMBER $JENKINS_URL"
+    MESSAGE               = "$JOB_NAME #$BUILD_NUMBER $BUILD_URL"
   }
 
   stages {
