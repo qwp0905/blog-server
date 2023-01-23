@@ -4,7 +4,7 @@ COPY . /origin
 
 WORKDIR /origin
 
-RUN npm ci && \
+RUN npm ci --silent && \
     npm run build
 
 FROM node:18.12.1-slim
