@@ -10,6 +10,7 @@ pipeline {
     AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
     AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
     AWS_ECR_REGISTRY      = credentials('aws-ecr-registry')
+    MESSAGE               = "$JOB_NAME #$BUILD_NUMBER $JENKINS_URL"
   }
 
   stages {
@@ -73,13 +74,13 @@ pipeline {
 
   post {
     success {
-      slackSend(channel: 'testtest', color: 'good', message: "[$BUILD_NUMBER] $COMMIT_MESSAGE")
+      slackSend(channel: 'testtest', color: 'good', message: "$MESSAGE")
     }
     failure {
-      slackSend(channel: 'testtest', color: 'danger', message: "[$BUILD_NUMBER] $COMMIT_MESSAGE")
+      slackSend(channel: 'testtest', color: 'danger', message: "$MESSAGE")
     }
     unstable {
-      slackSend(channel: 'testtest', color: 'warning', message: "[$BUILD_NUMBER] $COMMIT_MESSAGE")
+      slackSend(channel: 'testtest', color: 'warning', message: "$MESSAGE")
     }
   }
 }
