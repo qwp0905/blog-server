@@ -10,42 +10,46 @@ pipeline {
     AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
     AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
     AWS_ECR_REGISTRY      = credentials('aws-ecr-registry')
-    MESSAGE               = "$JOB_NAME #$BUILD_NUMBER $BUILD_URL"
+    MESSAGE               = "$JOB_NAME#$BUILD_NUMBER $BUILD_URL"
   }
 
   stages {
-    stage('Set Build Name') {
-      environment {
-        COMMIT_MESSAGE = "${sh(returnStdout: true, script: 'git log -1 --pretty=%B | head -n 1')}"
-      }
+    stage('Initialization') {
+      parallel {
+        stage('Set Build Name') {
+          environment {
+            COMMIT_MESSAGE = "${sh(returnStdout: true, script: 'git log -1 --pretty=%B | head -n 1')}"
+          }
 
-      steps {
-        buildName("[$BUILD_NUMBER] $COMMIT_MESSAGE")
-      }
-    }
-
-    stage('Configure Aws Credentials') {
-      environment {
-        RANDOM_STRING = UUID.randomUUID().toString()
-      }
-
-      steps {
-        container('aws-cli') {
-          sh('aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID')
-          sh('aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY')
-
-          sh('aws ecr get-login-password --region ap-northeast-2 > $RANDOM_STRING.txt')
+          steps {
+            buildName("[$BUILD_NUMBER] $COMMIT_MESSAGE")
+          }
         }
 
-        container('docker') {
-          sh('cat $RANDOM_STRING.txt | docker login -u AWS --password-stdin $AWS_ECR_REGISTRY')
-        }
+        stage('Configure Aws Credentials') {
+          environment {
+            RANDOM_STRING = UUID.randomUUID().toString()
+          }
 
-        container('helm') {
-          sh('cat $RANDOM_STRING.txt | helm registry login -u AWS --password-stdin $AWS_ECR_REGISTRY')
-        }
+          steps {
+            container('aws-cli') {
+              sh('aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID')
+              sh('aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY')
 
-        sh('rm -f $RANDOM_STRING.txt')
+              sh('aws ecr get-login-password --region ap-northeast-2 > $RANDOM_STRING.txt')
+            }
+
+            container('docker') {
+              sh('cat $RANDOM_STRING.txt | docker login -u AWS --password-stdin $AWS_ECR_REGISTRY')
+            }
+
+            container('helm') {
+              sh('cat $RANDOM_STRING.txt | helm registry login -u AWS --password-stdin $AWS_ECR_REGISTRY')
+            }
+
+            sh('rm -f $RANDOM_STRING.txt')
+          }
+        }
       }
     }
 
@@ -74,13 +78,13 @@ pipeline {
 
   post {
     success {
-      slackSend(channel: 'testtest', color: 'good', message: "$MESSAGE")
+      slackSend(channel: 'testtest', color: 'good', message: "Success $MESSAGE")
     }
     failure {
-      slackSend(channel: 'testtest', color: 'danger', message: "$MESSAGE")
+      slackSend(channel: 'testtest', color: 'danger', message: "Failed $MESSAGE")
     }
     unstable {
-      slackSend(channel: 'testtest', color: 'warning', message: "$MESSAGE")
+      slackSend(channel: 'testtest', color: 'warning', message: "Unstable $MESSAGE")
     }
   }
 }
