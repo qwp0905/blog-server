@@ -10,9 +10,9 @@ pipeline {
     AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
     AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
     AWS_ECR_REGISTRY      = credentials('aws-ecr-registry')
-    MESSAGE               = "$JOB_NAME#$BUILD_NUMBER $BUILD_URL"
     COMMIT_HASH           = "${sh(returnStdout: true, script: 'git log -1 --format=%H | head -n 1')}"
     COMMIT_MESSAGE        = "${sh(returnStdout: true, script: 'git log -1 --pretty=%B | head -n 1')}"
+    MESSAGE               = "$JOB_NAME#$BUILD_NUMBER\n$COMMIT_MESSAGE\n$BUILD_URL"
   }
 
   stages {
@@ -72,13 +72,13 @@ pipeline {
 
   post {
     success {
-      slackSend(channel: 'testtest', color: 'good', message: "Success $MESSAGE")
+      slackSend(channel: 'testtest', color: 'good', message: "[Success] $MESSAGE")
     }
     failure {
-      slackSend(channel: 'testtest', color: 'danger', message: "Failed $MESSAGE")
+      slackSend(channel: 'testtest', color: 'danger', message: "[Failed] $MESSAGE")
     }
     unstable {
-      slackSend(channel: 'testtest', color: 'warning', message: "Unstable $MESSAGE")
+      slackSend(channel: 'testtest', color: 'warning', message: "[Unstable] $MESSAGE")
     }
   }
 }
