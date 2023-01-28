@@ -11,16 +11,14 @@ pipeline {
     AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
     AWS_ECR_REGISTRY      = credentials('aws-ecr-registry')
     MESSAGE               = "$JOB_NAME#$BUILD_NUMBER $BUILD_URL"
+    COMMIT_HASH           = "${sh(returnStdout: true, script: 'git log -1 --format=%H | head -n 1')}"
+    COMMIT_MESSAGE        = "${sh(returnStdout: true, script: 'git log -1 --pretty=%B | head -n 1')}"
   }
 
   stages {
     stage('Initialization') {
       parallel {
         stage('Set Build Name') {
-          environment {
-            COMMIT_MESSAGE = "${sh(returnStdout: true, script: 'git log -1 --pretty=%B | head -n 1')}"
-          }
-
           steps {
             buildName("[$BUILD_NUMBER] $COMMIT_MESSAGE")
           }
@@ -54,10 +52,6 @@ pipeline {
     }
 
     stage('Build & Push') {
-      environment {
-        COMMIT_HASH = "${sh(returnStdout: true, script: 'git log -1 --format=%H | head -n 1')}"
-      }
-
       steps {
         container('docker') {
           sh('docker build --platform linux/amd64 -f prod.Dockerfile -t $AWS_ECR_REGISTRY/$APP:$COMMIT_HASH .')
