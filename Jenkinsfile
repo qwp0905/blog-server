@@ -7,8 +7,6 @@ pipeline {
 
   environment {
     APP                   = 'blog-server'
-    AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
-    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
     AWS_ECR_REGISTRY      = credentials('aws-ecr-registry')
     COMMIT_HASH           = "${sh(returnStdout: true, script: 'git log -1 --format=%H | head -n 1')}"
     COMMIT_MESSAGE        = "${sh(returnStdout: true, script: 'git log -1 --pretty=%B | head -n 1')}"
@@ -31,9 +29,6 @@ pipeline {
 
           steps {
             container('aws-cli') {
-              sh('aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID')
-              sh('aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY')
-
               sh('aws ecr get-login-password --region ap-northeast-2 > $RANDOM_STRING.txt')
             }
 
