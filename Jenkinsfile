@@ -6,11 +6,10 @@ pipeline {
   }
 
   environment {
-    APP                   = 'blog-server'
-    AWS_ECR_REGISTRY      = credentials('aws-ecr-registry')
-    COMMIT_HASH           = "${sh(returnStdout: true, script: 'git log -1 --format=%H | head -n 1')}"
-    COMMIT_MESSAGE        = "${sh(returnStdout: true, script: 'git log -1 --pretty=%B | head -n 1')}"
-    MESSAGE               = "$JOB_NAME#$BUILD_NUMBER\n$COMMIT_MESSAGE\n$BUILD_URL"
+    APP            = 'blog-server'
+    COMMIT_HASH    = "${sh(returnStdout: true, script: 'git log -1 --format=%H | head -n 1')}"
+    COMMIT_MESSAGE = "${sh(returnStdout: true, script: 'git log -1 --pretty=%B | head -n 1')}"
+    MESSAGE        = "$JOB_NAME#$BUILD_NUMBER\n$COMMIT_MESSAGE\n$BUILD_URL"
   }
 
   stages {
