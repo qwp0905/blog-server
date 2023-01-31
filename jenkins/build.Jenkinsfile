@@ -36,10 +36,6 @@ pipeline {
               sh('cat $RANDOM_STRING.txt | docker login -u AWS --password-stdin $AWS_ECR_REGISTRY')
             }
 
-            container('helm') {
-              sh('cat $RANDOM_STRING.txt | helm registry login -u AWS --password-stdin $AWS_ECR_REGISTRY')
-            }
-
             sh('rm -f $RANDOM_STRING.txt')
           }
         }
@@ -54,20 +50,16 @@ pipeline {
         }
       }
     }
-
-    stage('Deploy') {
-      steps {
-        container('helm') {
-          sh('echo "image: $AWS_ECR_REGISTRY/$APP:$COMMIT_HASH" >> helm/values.yml')
-          sh('helm upgrade --install $APP oci://$AWS_ECR_REGISTRY/service-helm -f helm/values.yml -n default')
-        }
-      }
-    }
   }
 
   post {
     success {
       slackSend(channel: 'testtest', color: 'good', message: "[Success] $MESSAGE")
+      build(
+        job: "(Deploy) $APP",
+        wait: false,
+        parameters: [string(name: 'DEPLOY_TAG', value: "$COMMIT_HASH")]
+      )
     }
     failure {
       slackSend(channel: 'testtest', color: 'danger', message: "[Failed] $MESSAGE")
