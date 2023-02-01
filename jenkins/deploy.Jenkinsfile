@@ -20,6 +20,12 @@ pipeline {
     stage('Initialization') {
       parallel {
         stage('Set Build Name') {
+          script {
+            if (!env.DEPLOY_TAG) {
+              env.DEPLOY_TAG = "${sh(returnStdout: true, script: 'git log -1 --pretty=%H | head -n 1')}"
+            }
+          }
+
           steps {
             sh('git switch --detach $DEPLOY_TAG')
             buildName("[$BUILD_NUMBER] $COMMIT_MESSAGE")
