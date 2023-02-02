@@ -13,28 +13,31 @@ services:
     container_name: web-server
     volumes:
       - ./src:/app/src
-      - ./.env:/app/.env
-      - ./.env.development:/app/.env.development
+      # - ./.env:/app/.env
+      # - ./.env.development:/app/.env.development
+    env_file:
+      - ./.env
     environment:
-      - REDIS_HOST=redis_server
-      - DATABASE_HOST=postgres_server
+      REDIS_HOST: redis_server
+      DATABASE_HOST: postgres_server
+      TZ: Asia/Seoul
 
   redis_server:
     image: redis
     ports:
       - 6379:6379
     volumes:
-      - redis-data:/data
+      - ./redis-data:/data
 
   postgres_server:
     image: postgres:14
     ports:
       - 5432:5432
     volumes:
-      - postgres14-data:/var/lib/postgresql/data
-
-volumes:
-  postgres14-data:
-    external: true
-  redis-data:
-    external: true
+      - ./postgres14-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: "123123123"
+      POSTGRES_DB: blog
+      PGDATA: /var/lib/postgresql/data
+      TZ: Asia/Seoul

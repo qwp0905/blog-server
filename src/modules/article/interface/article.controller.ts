@@ -34,7 +34,7 @@ export class ArticleController implements IController {
       .post('/', Auth({ key: 'id', role: 'admin' }), Wrap(this.create))
       .patch('/:id', Auth({ key: 'id', role: 'admin' }), Wrap(this.update))
       .delete('/:id', Auth({ key: 'id', role: 'admin' }), Wrap(this.delete))
-      .patch('/lookup/:id', Auth({ key: 'id' }), Wrap(this.lookup))
+      .patch('/:id/view', Auth({ key: 'id' }), Wrap(this.lookup))
 
     this.router.use(this.path, router)
   }

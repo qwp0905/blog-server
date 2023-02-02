@@ -5,7 +5,7 @@
   "scripts": {
     "start": "ts-node src/main.ts",
     "build": "rimraf dist && tsc --build tsconfig.json",
-    "dev": "cross-env NODE_ENV=development nodemon --watch '**/*' --ext 'ts,json' --ignore'**/*.spec.ts' --exec 'ts-node src/main.ts'",
+    "dev": "nodemon --watch '**/*' --ext 'ts,json' --ignore'**/*.spec.ts' --exec 'ts-node src/main.ts'",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage"
@@ -47,8 +47,6 @@
     "bcrypt": "^5.1.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "cross-env": "^7.0.3",
-    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "helmet": "^6.0.0",
     "ioredis": "^5.2.3",

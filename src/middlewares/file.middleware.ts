@@ -8,9 +8,9 @@ export const File = (field: string): RequestHandler =>
     fileFilter(req, file, callback) {
       const type = file.mimetype
       if (!type.match(/^image/)) {
-        callback(new Http400Exception('지원하지 않는 타입입니다.'))
+        return callback(new Http400Exception('지원하지 않는 타입입니다.'))
       }
 
-      callback(null, true)
+      return callback(null, true)
     }
   }).single(field)

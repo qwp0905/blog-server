@@ -114,3 +114,4 @@ dist
 
 # redis
 redis-data
+postgres14-data

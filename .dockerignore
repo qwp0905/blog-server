@@ -8,7 +8,7 @@ dist
 .prettierrc
 .eslintrc.js
 coverage
-deploy
+jenkins
 coverage
 redis-data
-deploy
+postgres14-data
