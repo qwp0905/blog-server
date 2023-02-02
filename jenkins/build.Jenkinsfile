@@ -15,15 +15,11 @@ pipeline {
     stage('Initialization') {
       parallel {
         stage('Set Build Name') {
-          steps {
-            buildName("[$BUILD_NUMBER] $COMMIT_MESSAGE")
-          }
+          steps { buildName("[$BUILD_NUMBER] $COMMIT_MESSAGE") }
         }
 
         stage('Configure Aws Credentials') {
-          environment {
-            RANDOM_STRING = UUID.randomUUID().toString()
-          }
+          environment { RANDOM_STRING = UUID.randomUUID().toString() }
 
           steps {
             container('aws-cli') {
