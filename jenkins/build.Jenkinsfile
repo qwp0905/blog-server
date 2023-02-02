@@ -1,9 +1,7 @@
 pipeline {
   agent { node { label 'agent' } }
 
-  triggers { 
-    pollSCM('* * * * *')
-  }
+  triggers { pollSCM('* * * * *') }
 
   environment {
     APP              = 'blog-server'
