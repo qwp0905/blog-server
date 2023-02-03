@@ -12,3 +12,5 @@ ingress:
 autoscaling:
   enabled: true
   maxReplicas: 10
+healthCheck:
+  path: /
