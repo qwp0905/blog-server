@@ -4,7 +4,6 @@ services:
   web-server:
     depends_on:
       - redis_server
-      - postgres_server
     build:
       context: .
       dockerfile: dev.Dockerfile
