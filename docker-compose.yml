@@ -1,9 +1,9 @@
 version: "3.9"
-# Nginx 추가해 개발환경과 운영환경 일치
 services:
   web-server:
     depends_on:
       - redis_server
+      - postgres_server
     build:
       context: .
       dockerfile: dev.Dockerfile
@@ -18,7 +18,8 @@ services:
       - ./.env
     environment:
       REDIS_HOST: redis_server
-      DATABASE_HOST: postgres_server
+      DATABASE_HOST_MASTER: postgres_server
+      DATABASE_HOST_SLAVE: postgres_server
       TZ: Asia/Seoul
 
   redis_server:
