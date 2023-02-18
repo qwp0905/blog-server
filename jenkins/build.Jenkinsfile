@@ -1,3 +1,3 @@
 @Library('common') _
 
-buildPipeline('blog-server', 'prod.Dockerfile')
+buildPipeline(name: 'blog-server', dockerfile: 'prod.Dockerfile')
