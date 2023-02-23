@@ -5,7 +5,7 @@ type TMapCallback<T, R> = (arg: T, index?: number) => R | Promise<R>
 type TTapCallback<T> = (arg: T, index?: number) => void | Promise<void>
 type TReduceCallback<A, C> = (acc: A, cur: C, index?: number) => A | Promise<A>
 
-export class StreamObject<T> {
+export class StreamObject<T = any> {
   constructor(private stream: Stream) {}
 
   getStream() {

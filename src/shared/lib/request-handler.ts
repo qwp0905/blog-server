@@ -23,9 +23,9 @@ export type StreamHandler = (
   req: Request,
   res?: Response,
   next?: NextFunction
-) => StreamObject<any>
+) => StreamObject | Promise<StreamObject>
 
-export const WrapStream = (handler: Handler): RequestHandler =>
+export const WrapStream = (handler: StreamHandler): RequestHandler =>
   async function (req, res, next) {
     try {
       const stream_object = await handler(req)
@@ -46,7 +46,7 @@ export const WrapStream = (handler: Handler): RequestHandler =>
       stream.on('end', () => {
         res.status(200).end()
       })
-    } catch (error) {
-      next(error)
+    } catch (err: unknown) {
+      next(err)
     }
   }
