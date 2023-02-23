@@ -70,7 +70,7 @@ export const filterStream = <T>(callback: TFilterCallback<T>) => {
 
   return new Transform({
     objectMode: true,
-    transform: async (chunk, _, next) => {
+    transform: async function (chunk, _, next) {
       try {
         const condition = await callback(chunk, index)
         index++
@@ -87,7 +87,7 @@ export const tapStream = <T>(callback: TTapCallback<T>) => {
 
   return new Transform({
     objectMode: true,
-    transform: async (chunk, _, next) => {
+    transform: async function (chunk, _, next) {
       try {
         await callback(chunk, index)
         index++
@@ -104,7 +104,7 @@ export const reduceStream = <A, C>(callback: TReduceCallback<A, C>, initialValue
 
   return new Transform({
     objectMode: true,
-    transform: async (chunk, _, next) => {
+    transform: async function (chunk, _, next) {
       try {
         initialValue = await callback(initialValue || chunk, chunk, index)
         index++
@@ -113,7 +113,7 @@ export const reduceStream = <A, C>(callback: TReduceCallback<A, C>, initialValue
         next(err)
       }
     },
-    flush: (next) => {
+    flush: function (this, next) {
       next(null, initialValue)
     }
   })
@@ -140,7 +140,7 @@ export const skipStream = (num: number) => {
 
   return new Transform({
     objectMode: true,
-    transform: (chunk, _, next) => {
+    transform: function (this, chunk, _, next) {
       index++
       if (index < num) {
         next()
@@ -156,12 +156,12 @@ export const takeStream = (num: number) => {
 
   return new Transform({
     objectMode: true,
-    transform: (chunk, _, next) => {
+    transform: function (this, chunk, _, next) {
       index++
       if (index < num) {
         next(null, chunk)
       } else {
-        next()
+        this.emit('end')
       }
     }
   })
