@@ -53,16 +53,27 @@ export class StreamObject<T> {
   reduce<A = T>(callback: TReduceCallback<A, T>, initialValue: A) {
     return fromStream<A>(this.stream.pipe(reduceStream<A, T>(callback, initialValue)))
   }
+
+  skip(num: number) {
+    return fromStream<T>(this.stream.pipe(skipStream(num)))
+  }
+
+  take(num: number) {
+    return fromStream<T>(this.stream.pipe(takeStream(num)))
+  }
 }
 
 export const fromStream = <T = any>(stream: Stream) => new StreamObject<T>(stream)
 
 export const filterStream = <T>(callback: TFilterCallback<T>) => {
+  let index = 0
+
   return new Transform({
     objectMode: true,
     transform: async (chunk, _, next) => {
       try {
-        const condition = await callback(chunk)
+        const condition = await callback(chunk, index)
+        index++
         condition ? next(null, chunk) : next()
       } catch (err) {
         next(err)
@@ -110,6 +121,7 @@ export const reduceStream = <A, C>(callback: TReduceCallback<A, C>, initialValue
 
 export const mapStream = <T, R>(callback: TMapCallback<T, R>) => {
   let index = 0
+
   return new Transform({
     objectMode: true,
     transform: async (chunk, _, next) => {
@@ -118,6 +130,38 @@ export const mapStream = <T, R>(callback: TMapCallback<T, R>) => {
         index++
       } catch (err) {
         next(err)
+      }
+    }
+  })
+}
+
+export const skipStream = (num: number) => {
+  let index = 0
+
+  return new Transform({
+    objectMode: true,
+    transform: (chunk, _, next) => {
+      index++
+      if (index < num) {
+        next()
+      } else {
+        next(null, chunk)
+      }
+    }
+  })
+}
+
+export const takeStream = (num: number) => {
+  let index = 0
+
+  return new Transform({
+    objectMode: true,
+    transform: (chunk, _, next) => {
+      index++
+      if (index < num) {
+        next(null, chunk)
+      } else {
+        next()
       }
     }
   })
