@@ -28,23 +28,19 @@ export type StreamHandler = (
 export const WrapStream = (handler: StreamHandler): RequestHandler =>
   async function (req, res, next) {
     try {
-      const stream_object = await handler(req)
-
-      const stream = stream_object.getStream()
+      const stream = await handler(req)
 
       res.setHeader('Content-Type', 'application/json')
-
-      stream.on('data', (chunk: any) => {
-        res.write(JSON.stringify(chunk) + '\n')
-      })
-
-      stream.on('error', (err: unknown) => {
-        stream.emit('close')
-        next(err)
-      })
-
-      stream.on('end', () => {
-        res.status(200).end()
+      stream.read({
+        next(chunk) {
+          res.write(JSON.stringify(chunk) + '\n')
+        },
+        error(error) {
+          next(error)
+        },
+        complete() {
+          res.status(200).end()
+        }
       })
     } catch (err: unknown) {
       next(err)

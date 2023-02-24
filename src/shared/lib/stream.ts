@@ -1,75 +1,116 @@
-import { Stream, Transform } from 'stream'
+import internal, { pipeline, Readable, Transform, Writable } from 'stream'
+import { nullFunction } from './etc'
 
 type TFilterCallback<T> = (arg: T, index?: number) => boolean | Promise<boolean>
 type TMapCallback<T, R> = (arg: T, index?: number) => R | Promise<R>
 type TTapCallback<T> = (arg: T, index?: number) => void | Promise<void>
 type TReduceCallback<A, C> = (acc: A, cur: C, index?: number) => A | Promise<A>
 
-export class StreamObject<T = any> {
-  constructor(private stream: Stream) {}
+interface IReadStreamOptions<T> {
+  next: (chunk: T) => void
+  error?: (error: unknown) => void
+  complete?: () => void
+}
 
-  getStream() {
-    return this.stream
+class ObjectModeTransform extends Transform {
+  constructor(options: internal.TransformOptions) {
+    super({
+      ...options,
+      objectMode: true
+    })
+  }
+}
+
+export class StreamObject<T = any> {
+  private stream: (Writable | Transform)[] = []
+
+  constructor(private source: Readable | Writable | Transform) {}
+
+  private pipe<R = T>(stream: Writable | Transform) {
+    this.stream.push(stream)
+    return this as unknown as StreamObject<R>
+  }
+
+  read({ next, error = nullFunction, complete = nullFunction }: IReadStreamOptions<T>) {
+    const stream = pipeline(this.source as any, ...(this.stream as any), () => {
+      stream.emit('close')
+    })
+
+    stream.on('data', next)
+
+    stream.on('error', error)
+
+    stream.on('end', complete)
   }
 
   toPromise() {
     return new Promise<T>((res, rej) => {
       let result: T
-      this.stream.on('data', (chunk: T) => {
-        result = chunk
+
+      this.read({
+        next(chunk) {
+          result = chunk
+        },
+        error(err) {
+          rej(err)
+        },
+        complete() {
+          res(result)
+        }
       })
-
-      this.stream.on('error', (err) => rej(err))
-
-      this.stream.on('end', () => res(result))
     })
   }
 
   toArray() {
     return new Promise<T[]>((res, rej) => {
       const result: T[] = []
-      this.stream.on('data', (chunk: T) => {
-        result.push(chunk)
+
+      this.read({
+        next(chunk) {
+          result.push(chunk)
+        },
+        error(err) {
+          rej(err)
+        },
+        complete() {
+          res(result)
+        }
       })
-
-      this.stream.on('error', (err) => rej(err))
-
-      this.stream.on('end', () => res(result))
     })
   }
 
   filter(callback: TFilterCallback<T>) {
-    return fromStream<T>(this.stream.pipe(filterStream(callback)))
+    return this.pipe(filterStream(callback))
   }
 
   map<R = T>(callback: TMapCallback<T, R>) {
-    return fromStream<R>(this.stream.pipe(mapStream<T, R>(callback)))
+    return this.pipe<R>(mapStream<T, R>(callback))
   }
 
   tap(callback: TTapCallback<T>) {
-    return fromStream<T>(this.stream.pipe(tapStream<T>(callback)))
+    return this.pipe(tapStream<T>(callback))
   }
 
   reduce<A = T>(callback: TReduceCallback<A, T>, initialValue: A) {
-    return fromStream<A>(this.stream.pipe(reduceStream<A, T>(callback, initialValue)))
+    return this.pipe<A>(reduceStream<A, T>(callback, initialValue))
   }
 
   skip(num: number) {
-    return fromStream<T>(this.stream.pipe(skipStream(num)))
+    return this.pipe(skipStream(num))
   }
 
   take(num: number) {
-    return fromStream<T>(this.stream.pipe(takeStream(num)))
+    return this.pipe(takeStream(num))
   }
 }
 
-export const fromStream = <T = any>(stream: Stream) => new StreamObject<T>(stream)
+export const fromStream = <T = any>(stream: Readable | Writable | Transform) =>
+  new StreamObject<T>(stream)
 
-export const filterStream = <T>(callback: TFilterCallback<T>) => {
+const filterStream = <T>(callback: TFilterCallback<T>) => {
   let index = 0
 
-  return new Transform({
-    objectMode: true,
+  return new ObjectModeTransform({
     transform: async function (chunk, _, next) {
       try {
         index++
@@ -82,11 +123,10 @@ export const filterStream = <T>(callback: TFilterCallback<T>) => {
   })
 }
 
-export const tapStream = <T>(callback: TTapCallback<T>) => {
+const tapStream = <T>(callback: TTapCallback<T>) => {
   let index = 0
 
-  return new Transform({
-    objectMode: true,
+  return new ObjectModeTransform({
     transform: async function (chunk, _, next) {
       try {
         index++
@@ -99,11 +139,10 @@ export const tapStream = <T>(callback: TTapCallback<T>) => {
   })
 }
 
-export const reduceStream = <A, C>(callback: TReduceCallback<A, C>, initialValue: A) => {
+const reduceStream = <A, C>(callback: TReduceCallback<A, C>, initialValue: A) => {
   let index = 0
 
-  return new Transform({
-    objectMode: true,
+  return new ObjectModeTransform({
     transform: async function (chunk, _, next) {
       try {
         index++
@@ -119,11 +158,10 @@ export const reduceStream = <A, C>(callback: TReduceCallback<A, C>, initialValue
   })
 }
 
-export const mapStream = <T, R>(callback: TMapCallback<T, R>) => {
+const mapStream = <T, R>(callback: TMapCallback<T, R>) => {
   let index = 0
 
-  return new Transform({
-    objectMode: true,
+  return new ObjectModeTransform({
     transform: async (chunk, _, next) => {
       try {
         index++
@@ -135,11 +173,10 @@ export const mapStream = <T, R>(callback: TMapCallback<T, R>) => {
   })
 }
 
-export const skipStream = (num: number) => {
+const skipStream = (num: number) => {
   let index = 0
 
-  return new Transform({
-    objectMode: true,
+  return new ObjectModeTransform({
     transform: function (this, chunk, _, next) {
       index++
       if (index <= num) {
@@ -151,11 +188,10 @@ export const skipStream = (num: number) => {
   })
 }
 
-export const takeStream = (num: number) => {
+const takeStream = (num: number) => {
   let index = 0
 
-  return new Transform({
-    objectMode: true,
+  return new ObjectModeTransform({
     transform: function (this, chunk, _, next) {
       index++
       if (index <= num) {
