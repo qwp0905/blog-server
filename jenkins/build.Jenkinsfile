@@ -4,5 +4,5 @@ buildPipeline(
   name: 'blog-server',
   dockerfile: 'prod.Dockerfile',
   manifestRepo: 'git@github.com:qwp0905/kubernetes.git',
-  manifestDir: 'applications/blog-server.yaml'
+  manifestDir: 'blog-server/values.yml'
 )
