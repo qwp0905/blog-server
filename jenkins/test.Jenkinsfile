@@ -1,6 +1,6 @@
 // pipeline {
 //   agent { node { label 'node18' } }
-  
+
 //   stages {
 //     stage('test'){
 //       steps {
