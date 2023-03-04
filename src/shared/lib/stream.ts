@@ -1,10 +1,10 @@
 import internal, { pipeline, Readable, Transform, Writable } from 'stream'
-import { nullFunction } from './etc'
+import { nullFunction } from '../utils'
 
-type TFilterCallback<T> = (arg: T, index?: number) => boolean | Promise<boolean>
-type TMapCallback<T, R> = (arg: T, index?: number) => R | Promise<R>
-type TTapCallback<T> = (arg: T, index?: number) => void | Promise<void>
-type TReduceCallback<A, C> = (acc: A, cur: C, index?: number) => A | Promise<A>
+type TFilterCallback<T> = (arg: T, index?: number) => boolean
+type TMapCallback<T, R> = (arg: T, index?: number) => R
+type TTapCallback<T> = (arg: T, index?: number) => void
+type TReduceCallback<A, C> = (acc: A, cur: C, index?: number) => A
 
 interface IReadStreamOptions<T> {
   next: (chunk: T) => void
@@ -32,9 +32,11 @@ export class StreamObject<T = any> {
   }
 
   read({ next, error = nullFunction, complete = nullFunction }: IReadStreamOptions<T>) {
-    const stream = pipeline(this.source as any, ...(this.stream as any), () => {
-      stream.emit('close')
-    })
+    const stream = this.stream.length
+      ? pipeline(this.source as any, ...(this.stream as any), () => {
+          stream.emit('close')
+        })
+      : this.source
 
     stream.on('data', next)
 
@@ -111,10 +113,10 @@ const filterStream = <T>(callback: TFilterCallback<T>) => {
   let index = 0
 
   return new ObjectModeTransform({
-    transform: async function (chunk, _, next) {
+    transform: function (chunk, _, next) {
       try {
         index++
-        const condition = await callback(chunk, index - 1)
+        const condition = callback(chunk, index - 1)
         condition ? next(null, chunk) : next()
       } catch (err) {
         next(err)
@@ -127,10 +129,10 @@ const tapStream = <T>(callback: TTapCallback<T>) => {
   let index = 0
 
   return new ObjectModeTransform({
-    transform: async function (chunk, _, next) {
+    transform: function (chunk, _, next) {
       try {
         index++
-        await callback(chunk, index - 1)
+        callback(chunk, index - 1)
         next(null, chunk)
       } catch (err) {
         next(err)
@@ -143,10 +145,10 @@ const reduceStream = <A, C>(callback: TReduceCallback<A, C>, initialValue: A) =>
   let index = 0
 
   return new ObjectModeTransform({
-    transform: async function (chunk, _, next) {
+    transform: function (chunk, _, next) {
       try {
         index++
-        initialValue = await callback(initialValue || chunk, chunk, index - 1)
+        initialValue = callback(initialValue || chunk, chunk, index - 1)
         next()
       } catch (err) {
         next(err)
@@ -162,10 +164,10 @@ const mapStream = <T, R>(callback: TMapCallback<T, R>) => {
   let index = 0
 
   return new ObjectModeTransform({
-    transform: async (chunk, _, next) => {
+    transform: (chunk, _, next) => {
       try {
         index++
-        next(null, await callback(chunk, index - 1))
+        next(null, callback(chunk, index - 1))
       } catch (err) {
         next(err)
       }

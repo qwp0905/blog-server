@@ -1,6 +1,6 @@
 import { ErrorRequestHandler } from 'express'
 import { HttpException } from '../shared/lib/http.exception'
-import { DateFormat } from '../shared/utils/date'
+import { DateFormat } from '../shared/utils'
 
 export const ErrorMiddleWare: ErrorRequestHandler = (exception, _, res, next) => {
   const error_status =

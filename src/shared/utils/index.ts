@@ -5,3 +5,7 @@ export const DateFormat = (date?: Date | number): string => {
     hour12: false
   }).format(date)
 }
+
+export const nullFunction = () => {
+  null
+}

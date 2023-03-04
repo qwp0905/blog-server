@@ -1,5 +1,5 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express'
-import { DateFormat } from '../utils/date'
+import { DateFormat } from '../utils'
 import { StreamObject } from './stream'
 
 export type Handler = (
@@ -42,7 +42,7 @@ export const WrapStream = (handler: StreamHandler): RequestHandler =>
           res.status(200).end()
         }
       })
-    } catch (err: unknown) {
-      next(err)
+    } catch (error: unknown) {
+      next(error)
     }
   }
