@@ -12,6 +12,18 @@ interface IReadStreamOptions<T> {
   complete?: () => void
 }
 
+interface IStreamObject<T> {
+  read(options: IReadStreamOptions<T>): void
+  toPromise(): Promise<T>
+  toArray(): Promise<T[]>
+  filter(callback: TFilterCallback<T>): IStreamObject<T>
+  map<R = T>(callback: TMapCallback<T, R>): IStreamObject<R>
+  tap(callback: TTapCallback<T>): IStreamObject<T>
+  reduce<A = T>(callback: TReduceCallback<A, T>, initialValue: A): IStreamObject<A>
+  skip(num: number): IStreamObject<T>
+  take(num: number): IStreamObject<T>
+}
+
 class ObjectModeTransform extends Transform {
   constructor(options: internal.TransformOptions) {
     super({
@@ -21,7 +33,7 @@ class ObjectModeTransform extends Transform {
   }
 }
 
-export class StreamObject<T = any> {
+export class StreamObject<T = any> implements IStreamObject<T> {
   private stream: (Writable | Transform)[] = []
 
   constructor(private source: Readable | Writable | Transform) {}
