@@ -1,10 +1,20 @@
-import internal, { pipeline, Readable, Transform, Writable } from 'stream'
+import internal, {
+  EventEmitter,
+  PassThrough,
+  pipeline,
+  Readable,
+  Stream,
+  Transform,
+  Writable
+} from 'stream'
 import { nullFunction } from '../utils'
 
 type TFilterCallback<T> = (arg: T, index?: number) => boolean
 type TMapCallback<T, R> = (arg: T, index?: number) => R
 type TTapCallback<T> = (arg: T, index?: number) => void
 type TReduceCallback<A, C> = (acc: A, cur: C, index?: number) => A
+
+type Iter<T> = AsyncIterable<T> | Iterable<T>
 
 interface IReadStreamOptions<T> {
   next: (chunk: T) => void
@@ -17,26 +27,47 @@ interface IStreamObject<T> {
   toPromise(): Promise<T>
   toArray(): Promise<T[]>
   filter(callback: TFilterCallback<T>): IStreamObject<T>
-  map<R = T>(callback: TMapCallback<T, R>): IStreamObject<R>
+  map<R = T>(callback: TMapCallback<T, R | Promise<R>>): IStreamObject<R>
   tap(callback: TTapCallback<T>): IStreamObject<T>
   reduce<A = T>(callback: TReduceCallback<A, T>, initialValue: A): IStreamObject<A>
   skip(num: number): IStreamObject<T>
   take(num: number): IStreamObject<T>
+  parallel(num: number): IStreamObject<T>
+  bufferCount(num: number): IStreamObject<T[]>
+  mergeAll(): IStreamObject<T extends Iter<infer K> ? K : any>
+  delay(ms: number): IStreamObject<T>
+  copy(count: number): IStreamObject<T>[]
 }
 
 class ObjectModeTransform extends Transform {
   constructor(options: internal.TransformOptions) {
-    super({
-      ...options,
-      objectMode: true
-    })
+    super({ ...options, objectMode: true })
+  }
+}
+class ObjectModePassThrough extends PassThrough {
+  constructor(options?: internal.TransformOptions) {
+    super({ ...(options || {}), objectMode: true })
   }
 }
 
 export class StreamObject<T = any> implements IStreamObject<T> {
   private stream: (Writable | Transform)[] = []
+  private source: Readable | Writable | Transform
+  private concurrency: number
 
-  constructor(private source: Readable | Writable | Transform) {}
+  constructor(iter: Readable | Writable | Transform | Iter<T>) {
+    switch (true) {
+      case iter instanceof Stream:
+        this.source = iter as Readable
+        break
+      case typeof iter[Symbol.asyncIterator] === 'function':
+      case typeof iter[Symbol.iterator] === 'function':
+        this.source = Readable.from(iter as Iter<T>, { objectMode: true })
+        break
+      default:
+        throw new Error('does not match on support type')
+    }
+  }
 
   private pipe<R = T>(stream: Writable | Transform) {
     this.stream.push(stream)
@@ -97,8 +128,13 @@ export class StreamObject<T = any> implements IStreamObject<T> {
     return this.pipe(filterStream(callback))
   }
 
-  map<R = T>(callback: TMapCallback<T, R>) {
-    return this.pipe<R>(mapStream<T, R>(callback))
+  map<R = T>(callback: TMapCallback<T, R | Promise<R>>) {
+    const co = this.concurrency
+    return this.pipe<R>(
+      co
+        ? parallelStream<T, R>(co, callback)
+        : mapStream<T, R>(callback as TMapCallback<T, R>)
+    )
   }
 
   tap(callback: TTapCallback<T>) {
@@ -116,10 +152,61 @@ export class StreamObject<T = any> implements IStreamObject<T> {
   take(num: number) {
     return this.pipe(takeStream(num))
   }
+
+  parallel(concurrency: number): IStreamObject<T> {
+    this.concurrency = concurrency
+    return this
+  }
+
+  bufferCount(num: number): IStreamObject<T[]> {
+    return this.pipe(bufferCount(num)) as unknown as IStreamObject<T[]>
+  }
+
+  mergeAll(): IStreamObject<T extends Iter<infer K> ? K : any> {
+    return this.pipe(mergeAll())
+  }
+
+  delay(ms: number): IStreamObject<T> {
+    return this.pipe(delayStream(ms))
+  }
+
+  copy(count: number): IStreamObject<T>[] {
+    const copied = new Array(count).fill(null).map(() => new ObjectModePassThrough())
+    this.read({
+      next(chunk) {
+        copied.forEach((e) => e.push(chunk))
+      },
+      error(error) {
+        copied.forEach((e) => e.emit('error', error))
+      },
+      complete() {
+        copied.forEach((e) => e.end())
+      }
+    })
+
+    return copied.map((e) => fromStream(e))
+  }
 }
 
-export const fromStream = <T = any>(stream: Readable | Writable | Transform) =>
-  new StreamObject<T>(stream)
+export const fromStream = <T = any>(
+  ...iter: (Readable | Writable | Transform | Iter<T>)[]
+): IStreamObject<T> => {
+  return iter.length === 1
+    ? new StreamObject(iter[0])
+    : new StreamObject(mergeStreams(...iter))
+}
+
+const mergeStreams = <T = any>(
+  ...streams: (Readable | Writable | Transform | Iter<T>)[]
+) => {
+  return (async function* () {
+    for (const stream of streams) {
+      for await (const e of stream as AsyncIterable<T>) {
+        yield e
+      }
+    }
+  })()
+}
 
 const filterStream = <T>(callback: TFilterCallback<T>) => {
   let index = 0
@@ -212,6 +299,124 @@ const takeStream = (num: number) => {
         next(null, chunk)
       } else {
         this.emit('end')
+      }
+    }
+  })
+}
+
+const bufferCount = (num: number) => {
+  let queue = []
+  return new ObjectModeTransform({
+    transform(chunk, _, next) {
+      queue.push(chunk)
+      if (queue.length < num) {
+        next()
+      } else {
+        next(null, queue)
+        queue = []
+      }
+    },
+    flush(next) {
+      queue.length ? next(null, queue) : next()
+    }
+  })
+}
+
+const mergeAll = () => {
+  const transform = new ObjectModeTransform({
+    async transform(chunk, _, next) {
+      switch (true) {
+        case chunk instanceof StreamObject:
+          chunk.read({
+            next(chunk) {
+              transform.push(chunk)
+            },
+            error(error) {
+              transform.emit('error', error)
+            },
+            complete() {
+              next()
+            }
+          })
+          break
+
+        case typeof chunk[Symbol.asyncIterator] === 'function':
+        case typeof chunk[Symbol.iterator] === 'function':
+          for await (const c of chunk) {
+            this.push(c)
+          }
+          next()
+          break
+        default:
+          next()
+          break
+      }
+    }
+  })
+  return transform
+}
+
+const delayStream = (ms: number) => {
+  return new ObjectModeTransform({
+    async transform(chunk, _, next) {
+      await new Promise((resolve) => setTimeout(resolve, ms))
+      next(null, chunk)
+    }
+  })
+}
+
+const parallelStream = function <T, R>(
+  concurrency: number,
+  callback: TMapCallback<T, R | Promise<R>>
+) {
+  let index = 0
+  let running = 0
+  const queue: internal.TransformCallback[] = []
+  const event = new EventEmitter()
+  const wait = new Promise((resolve) => {
+    event.on('done', () => {
+      running--
+      while (queue.length && running < concurrency) {
+        const done = queue.shift()
+        done()
+      }
+      if (running > 0) {
+        return
+      }
+      resolve(null)
+    })
+  })
+
+  return new ObjectModeTransform({
+    async flush(next) {
+      await wait
+      next()
+    },
+    transform(chunk, _, next) {
+      index++
+      running++
+      try {
+        const processed = callback(chunk, index - 1)
+
+        const promise =
+          processed instanceof Promise
+            ? processed
+            : new Promise((resolve) => resolve(processed))
+
+        promise
+          .then((data) => {
+            this.push(data)
+            event.emit('done')
+          })
+          .catch((err) => this.emit('error', err))
+
+        if (running >= concurrency) {
+          queue.push(next)
+        } else {
+          next()
+        }
+      } catch (err) {
+        next(err)
       }
     }
   })
