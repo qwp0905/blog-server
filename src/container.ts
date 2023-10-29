@@ -5,7 +5,7 @@ import { GenerateTokenHandler } from './auth/command/generate-token.handler'
 import { JwtService } from './auth/jwt.service'
 import { JwtStrategy } from './auth/strategies/jwt.strategy'
 import { AwsS3Config } from './config/aws.config'
-import { RedisCacheConfig } from './config/redis.config'
+import { RedisCacheConfig, RedisLockConfig, RedisSubConfig } from './config/redis.config'
 import { TypeOrmConfig } from './config/typeorm.config'
 import { RedisService } from './external/redis/redis.service'
 import { AwsS3Service } from './external/aws/s3.service'
@@ -57,6 +57,8 @@ import { App } from './app'
 // External ###############################################################
 export const DATABASE = new DataSource(TypeOrmConfig)
 export const REDIS_CACHE = new IORedis(RedisCacheConfig)
+export const REDIS_SUB = new IORedis(RedisSubConfig)
+export const REDIS_LOCK = new IORedis(RedisLockConfig)
 export const AWS_S3 = new S3(AwsS3Config)
 
 // Bus ###############################################################
@@ -68,7 +70,7 @@ const queryBus = new QueryBus()
 const validationPipe = new ValidationPipe()
 
 // External modules ###############################################################
-const redisService = new RedisService(REDIS_CACHE)
+const redisService = new RedisService(REDIS_CACHE, REDIS_LOCK, REDIS_SUB)
 
 const s3Service = new AwsS3Service(AWS_S3)
 
