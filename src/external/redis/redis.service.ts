@@ -67,10 +67,10 @@ export class RedisService {
     await this.redisCache.del(key)
   }
 
-  async lock(key: string, timeout = 60 * 1000) {
+  async lock(key: string, timeout = 60 * 1000, retry = -1) {
     const current = genValue()
     await this.redisSub.subscribe(key)
-    while (true) {
+    for (let i = 0; i < retry || retry === -1; i++) {
       const pttl = await this.redisLock.acquire(key, current, timeout)
       if (pttl === -2) {
         return new Locker(this.redisLock, key, current)
