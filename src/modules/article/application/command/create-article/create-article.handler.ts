@@ -1,7 +1,14 @@
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
+import { Container } from '../../../../../shared/lib/container'
 import { ArticleFactory } from '../../../domain/article.factory'
-import { IArticleRepository } from '../../../domain/article.repository.interface'
-import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interface'
+import {
+  ARTICLE_REPOSITORY,
+  IArticleRepository
+} from '../../../domain/article.repository.interface'
+import {
+  IRedisAdapter,
+  REDIS_ADAPTER
+} from '../../../interface/adapters/redis.adapter.interface'
 import {
   CreateArticleCommand,
   CREATE_ARTICLE,
@@ -28,3 +35,8 @@ export class CreateArticleHandler implements ICommandHandler<CreateArticleComman
     await this.redisAdapter.refreshTags()
   }
 }
+Container.register(CreateArticleHandler, [
+  ARTICLE_REPOSITORY,
+  ArticleFactory,
+  REDIS_ADAPTER
+])

@@ -1,5 +1,6 @@
 import { IArticle } from './article'
 
+export const ARTICLE_REPOSITORY = 'article-repository'
 export interface IArticleRepository {
   findOneByIds: (id: number, account_id: number) => Promise<IArticle>
   findOneByArticleId: (id: number) => Promise<IArticle>

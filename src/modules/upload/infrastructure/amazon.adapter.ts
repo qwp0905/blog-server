@@ -1,6 +1,7 @@
 import { extname } from 'path'
 import { AwsS3Service } from '../../../external/aws/s3.service'
 import { IAmazonAdapter } from '../interface/adapters/amazon.adapter.interface'
+import { Container } from '../../../shared/lib/container'
 
 export class AmazonAdapter implements IAmazonAdapter {
   constructor(private readonly s3Service: AwsS3Service) {}
@@ -13,3 +14,4 @@ export class AmazonAdapter implements IAmazonAdapter {
     )
   }
 }
+Container.register(AmazonAdapter, [AwsS3Service])

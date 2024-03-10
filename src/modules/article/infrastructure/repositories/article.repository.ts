@@ -1,12 +1,15 @@
 import { DataSource, QueryRunner } from 'typeorm'
 import { IArticle, IArticleProperties } from '../../domain/article'
 import { ArticleFactory } from '../../domain/article.factory'
-import { IArticleRepository } from '../../domain/article.repository.interface'
+import {
+  ARTICLE_REPOSITORY,
+  IArticleRepository
+} from '../../domain/article.repository.interface'
 import { ArticleTagMapEntity } from '../entities/article-tag-map.entity'
 import { ArticleEntity } from '../entities/article.entity'
 import { TagEntity } from '../entities/tag.entity'
-
-export const ARTICLE_REPOSITORY = 'article_repository'
+import { Container } from '../../../../shared/lib/container'
+import { POSTGRES_DB } from '../../../../config/typeorm.config'
 
 export class ArticleRepository implements IArticleRepository {
   constructor(
@@ -175,3 +178,5 @@ export class ArticleRepository implements IArticleRepository {
     return entity && this.articleFactory.reconstitute(entity)
   }
 }
+Container.register(ArticleRepository, [POSTGRES_DB, ArticleFactory])
+Container.provide({ provide: ARTICLE_REPOSITORY, useClass: ArticleRepository })

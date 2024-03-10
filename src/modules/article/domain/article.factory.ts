@@ -1,3 +1,4 @@
+import { Container } from '../../../shared/lib/container'
 import { Article, IArticle, IArticleProperties } from './article'
 
 export class ArticleFactory {
@@ -9,3 +10,4 @@ export class ArticleFactory {
     return new Article(properties)
   }
 }
+Container.register(ArticleFactory)

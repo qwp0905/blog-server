@@ -1,4 +1,5 @@
 import { AccountOrigin } from '../../../@types/account'
+import { Container } from '../../../shared/lib/container'
 import { Account, IAccount, IAccountProperties } from './account'
 
 export class AccountFactory {
@@ -15,3 +16,4 @@ export class AccountFactory {
     return new Account(properties)
   }
 }
+Container.register(AccountFactory)

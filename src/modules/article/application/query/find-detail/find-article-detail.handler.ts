@@ -11,6 +11,8 @@ import {
   FIND_ARTICLE_DETAIL,
   IFindArticleDetailQuery
 } from './find-article-detail.query'
+import { Container } from '../../../../../shared/lib/container'
+import { POSTGRES_DB } from '../../../../../config/typeorm.config'
 
 export class FindArticleDetailHandler
   implements IQueryHandler<FindArticleDetailQuery, FindArticleDetailResult>
@@ -61,3 +63,4 @@ export class FindArticleDetailHandler
       .getRawOne()
   }
 }
+Container.register(FindArticleDetailHandler, [POSTGRES_DB])

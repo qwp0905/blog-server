@@ -3,13 +3,18 @@ import { IQueryHandler } from '../../../../../shared/interfaces/query'
 import { ArticleTagMapEntity } from '../../../infrastructure/entities/article-tag-map.entity'
 import { ArticleEntity } from '../../../infrastructure/entities/article.entity'
 import { TagEntity } from '../../../infrastructure/entities/tag.entity'
-import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interface'
+import {
+  IRedisAdapter,
+  REDIS_ADAPTER
+} from '../../../interface/adapters/redis.adapter.interface'
 import {
   FindTagsQuery,
   FindTagsResult,
   FIND_TAGS,
   IFindTagsQuery
 } from './find-tags.query'
+import { Container } from '../../../../../shared/lib/container'
+import { POSTGRES_DB } from '../../../../../config/typeorm.config'
 
 export class FindTagsHandler implements IQueryHandler<FindTagsQuery, FindTagsResult[]> {
   readonly key = FIND_TAGS
@@ -53,3 +58,4 @@ export class FindTagsHandler implements IQueryHandler<FindTagsQuery, FindTagsRes
     return [total, ...result]
   }
 }
+Container.register(FindTagsHandler, [POSTGRES_DB, REDIS_ADAPTER])

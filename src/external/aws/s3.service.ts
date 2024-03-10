@@ -1,4 +1,6 @@
 import { S3 } from 'aws-sdk'
+import { Container } from '../../shared/lib/container'
+import { AWS_S3 } from '../../config/aws.config'
 
 export class AwsS3Service {
   constructor(private readonly s3: S3) {}
@@ -20,3 +22,4 @@ export class AwsS3Service {
     return Location
   }
 }
+Container.register(AwsS3Service, [AWS_S3])

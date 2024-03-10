@@ -7,3 +7,4 @@ export interface IRedisAdapter {
   getTags: () => Promise<FindTagsResult[] | undefined>
   refreshTags: () => Promise<void>
 }
+export const REDIS_ADAPTER = 'redis-adapter'

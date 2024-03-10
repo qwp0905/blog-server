@@ -13,6 +13,7 @@ import { UpdateAccountDto } from './dto/update-account.dto'
 import { UpdateAccountCommand } from '../application/command/update-account/update-account.command'
 import { RefreshTokenCommand } from '../application/command/refresh-token/refresh-token.command'
 import { ValidationPipe } from '../../../shared/lib/validation-pipe'
+import { Container } from '../../../shared/lib/container'
 
 export class AccountController implements IController {
   readonly path = '/account'
@@ -82,3 +83,4 @@ export class AccountController implements IController {
     return await this.commandBus.execute(command)
   }
 }
+Container.register(AccountController, [CommandBus, QueryBus])

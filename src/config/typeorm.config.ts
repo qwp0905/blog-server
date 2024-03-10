@@ -1,4 +1,5 @@
-import { DataSourceOptions } from 'typeorm'
+import { DataSource, DataSourceOptions } from 'typeorm'
+import { Provider } from '../shared/lib/container'
 
 export const TypeOrmConfig: DataSourceOptions = {
   type: 'postgres',
@@ -22,5 +23,14 @@ export const TypeOrmConfig: DataSourceOptions = {
         database: process.env.DATABASE_NAME
       }
     ]
+  }
+}
+
+export const POSTGRES_DB = 'postgresql'
+
+export const TypeORMProvider: Provider<DataSource> = {
+  provide: POSTGRES_DB,
+  async useFactory() {
+    return new DataSource(TypeOrmConfig).initialize()
   }
 }

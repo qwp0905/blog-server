@@ -1,12 +1,16 @@
 import { Http409Exception } from '../../../../../shared/lib/http.exception'
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
 import { AccountFactory } from '../../../domain/account.factory'
-import { IAccountRepository } from '../../../domain/account.repository.interface'
+import {
+  ACCOUNT_REPOSITORY,
+  IAccountRepository
+} from '../../../domain/account.repository.interface'
 import {
   CreateAccountCommand,
   CREATE_ACCOUNT,
   ICreateAccountCommand
 } from './create-account.command'
+import { Container } from '../../../../../shared/lib/container'
 
 export class CreateAccountHandler implements ICommandHandler<CreateAccountCommand> {
   readonly key = CREATE_ACCOUNT
@@ -33,3 +37,4 @@ export class CreateAccountHandler implements ICommandHandler<CreateAccountComman
     await this.accountRepository.insertOne(account)
   }
 }
+Container.register(CreateAccountHandler, [ACCOUNT_REPOSITORY, AccountFactory])

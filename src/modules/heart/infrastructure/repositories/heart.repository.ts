@@ -3,6 +3,8 @@ import { IHeart } from '../../domain/heart'
 import { HeartFactory } from '../../domain/heart.factory'
 import { IHeartRepository } from '../../domain/heart.repository.interface'
 import { HeartEntity } from '../entities/heart.entity'
+import { Container } from '../../../../shared/lib/container'
+import { POSTGRES_DB } from '../../../../config/typeorm.config'
 
 export class HeartRepository implements IHeartRepository {
   constructor(
@@ -48,3 +50,5 @@ export class HeartRepository implements IHeartRepository {
     return entity && this.heartFactory.reconstitute(entity)
   }
 }
+Container.register(HeartRepository, [POSTGRES_DB, HeartFactory])
+// Container.provide({})

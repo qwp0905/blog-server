@@ -12,6 +12,8 @@ import {
   FIND_ARTICLE_ALL,
   IFindArticleAllQuery
 } from './find-article-all.query'
+import { Container } from '../../../../../shared/lib/container'
+import { POSTGRES_DB } from '../../../../../config/typeorm.config'
 
 export class FindArticleAllHandler
   implements IQueryHandler<FindArticleAllQuery, FindArticleAllResult[]>
@@ -73,3 +75,4 @@ export class FindArticleAllHandler
       .execute()
   }
 }
+Container.register(FindArticleAllHandler, [POSTGRES_DB])

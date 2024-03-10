@@ -1,8 +1,13 @@
 import { DataSource } from 'typeorm'
 import { IAccount } from '../../domain/account'
 import { AccountFactory } from '../../domain/account.factory'
-import { IAccountRepository } from '../../domain/account.repository.interface'
+import {
+  ACCOUNT_REPOSITORY,
+  IAccountRepository
+} from '../../domain/account.repository.interface'
 import { AccountEntity } from '../entities/account.entity'
+import { Container } from '../../../../shared/lib/container'
+import { POSTGRES_DB } from '../../../../config/typeorm.config'
 
 export class AccountRepository implements IAccountRepository {
   constructor(
@@ -66,3 +71,5 @@ export class AccountRepository implements IAccountRepository {
     return entity && this.accountFactory.reconstitute(entity)
   }
 }
+Container.register(AccountRepository, [POSTGRES_DB, AccountFactory])
+Container.provide({ provide: ACCOUNT_REPOSITORY, useClass: AccountRepository })

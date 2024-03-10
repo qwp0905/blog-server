@@ -1,6 +1,7 @@
 import { GenerateTokenCommand } from '../../../../../auth/command/generate-token.command'
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
 import { CommandBus } from '../../../../../shared/lib/bus'
+import { Container } from '../../../../../shared/lib/container'
 import {
   IRefreshTokenCommand,
   RefreshTokenCommand,
@@ -19,3 +20,4 @@ export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand,
     return access_token
   }
 }
+Container.register(RefreshTokenHandler, [CommandBus])

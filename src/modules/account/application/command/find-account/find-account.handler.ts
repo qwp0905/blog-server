@@ -1,7 +1,11 @@
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
+import { Container } from '../../../../../shared/lib/container'
 import { Http404Exception } from '../../../../../shared/lib/http.exception'
 import { IAccount } from '../../../domain/account'
-import { IAccountRepository } from '../../../domain/account.repository.interface'
+import {
+  ACCOUNT_REPOSITORY,
+  IAccountRepository
+} from '../../../domain/account.repository.interface'
 import {
   FindAccountCommand,
   FIND_ACCOUNT,
@@ -22,3 +26,4 @@ export class FindAccountHandler implements ICommandHandler<FindAccountCommand, I
     return account
   }
 }
+Container.register(FindAccountHandler, [ACCOUNT_REPOSITORY])

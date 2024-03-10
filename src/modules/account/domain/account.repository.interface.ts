@@ -1,5 +1,6 @@
 import { IAccount } from './account'
 
+export const ACCOUNT_REPOSITORY = 'account-repository'
 export interface IAccountRepository {
   insertOne(account: IAccount): Promise<void>
   findOneById(id: number): Promise<IAccount | undefined>

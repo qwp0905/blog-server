@@ -1,4 +1,7 @@
 import { Callback, Result, Redis } from 'ioredis'
+import { Time } from '../../shared/lib/time'
+import { Container } from '../../shared/lib/container'
+import { REDIS_CACHE, REDIS_LOCK, REDIS_SUB } from '../../config/redis.config'
 
 const acquireScript = `
 if redis.call("SET", KEYS[1], ARGV[1], "NX", "PX", ARGV[2]) then
@@ -67,7 +70,7 @@ export class RedisService {
     await this.redisCache.del(key)
   }
 
-  async lock(key: string, timeout = 60 * 1000, retry = -1) {
+  async lock(key: string, timeout = Time.minute(), retry = -1) {
     const current = genValue()
     await this.redisSub.subscribe(key)
     for (let i = 0; i < retry || retry === -1; i++) {
@@ -94,3 +97,4 @@ class Locker {
     return this.redisLock.release(this.key, this.value)
   }
 }
+Container.register(RedisService, [REDIS_CACHE, REDIS_LOCK, REDIS_SUB])

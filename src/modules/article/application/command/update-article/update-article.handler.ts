@@ -1,7 +1,14 @@
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
+import { Container } from '../../../../../shared/lib/container'
 import { Http404Exception } from '../../../../../shared/lib/http.exception'
-import { IArticleRepository } from '../../../domain/article.repository.interface'
-import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interface'
+import {
+  ARTICLE_REPOSITORY,
+  IArticleRepository
+} from '../../../domain/article.repository.interface'
+import {
+  IRedisAdapter,
+  REDIS_ADAPTER
+} from '../../../interface/adapters/redis.adapter.interface'
 import {
   IUpdateArticleCommand,
   UpdateArticleCommand,
@@ -34,3 +41,4 @@ export class UpdateArticleHandler implements ICommandHandler<UpdateArticleComman
     await this.redisAdapter.refreshTags()
   }
 }
+Container.register(UpdateArticleHandler, [ARTICLE_REPOSITORY, REDIS_ADAPTER])

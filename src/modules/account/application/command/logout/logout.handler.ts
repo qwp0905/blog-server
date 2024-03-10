@@ -1,5 +1,9 @@
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
-import { IAccountRepository } from '../../../domain/account.repository.interface'
+import { Container } from '../../../../../shared/lib/container'
+import {
+  ACCOUNT_REPOSITORY,
+  IAccountRepository
+} from '../../../domain/account.repository.interface'
 import { ILogoutCommand, LOGOUT, LogoutCommand } from './logout.command'
 
 export class LogoutHandler implements ICommandHandler<LogoutCommand> {
@@ -13,3 +17,4 @@ export class LogoutHandler implements ICommandHandler<LogoutCommand> {
     await this.accountRepository.updateOne(account)
   }
 }
+Container.register(LogoutHandler, [ACCOUNT_REPOSITORY])

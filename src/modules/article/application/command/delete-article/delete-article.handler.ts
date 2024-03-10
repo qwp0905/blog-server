@@ -1,7 +1,14 @@
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
+import { Container } from '../../../../../shared/lib/container'
 import { Http404Exception } from '../../../../../shared/lib/http.exception'
-import { IArticleRepository } from '../../../domain/article.repository.interface'
-import { IRedisAdapter } from '../../../interface/adapters/redis.adapter.interface'
+import {
+  ARTICLE_REPOSITORY,
+  IArticleRepository
+} from '../../../domain/article.repository.interface'
+import {
+  IRedisAdapter,
+  REDIS_ADAPTER
+} from '../../../interface/adapters/redis.adapter.interface'
 import {
   DeleteArticleCommand,
   DELETE_ARTICLE,
@@ -26,3 +33,4 @@ export class DeleteArticleHandler implements ICommandHandler<DeleteArticleComman
     await this.redisAdapter.refreshTags()
   }
 }
+Container.register(DeleteArticleHandler, [ARTICLE_REPOSITORY, REDIS_ADAPTER])

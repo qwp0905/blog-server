@@ -1,6 +1,10 @@
 import { ICommandHandler } from '../../../../../shared/interfaces/command'
+import { Container } from '../../../../../shared/lib/container'
 import { Http409Exception } from '../../../../../shared/lib/http.exception'
-import { IAccountRepository } from '../../../domain/account.repository.interface'
+import {
+  ACCOUNT_REPOSITORY,
+  IAccountRepository
+} from '../../../domain/account.repository.interface'
 import {
   IUpdateAccountCommand,
   UpdateAccountCommand,
@@ -24,3 +28,4 @@ export class UpdateAccountHandler implements ICommandHandler<UpdateAccountComman
     await this.accountRepository.updateOne(account)
   }
 }
+Container.register(UpdateAccountHandler, [ACCOUNT_REPOSITORY])
