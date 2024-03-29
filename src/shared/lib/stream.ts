@@ -15,6 +15,7 @@ type TTapCallback<T> = (arg: T, index?: number) => void
 type TReduceCallback<A, C> = (acc: A, cur: C, index?: number) => A
 
 type Iter<T> = AsyncIterable<T> | Iterable<T>
+type CanBeStream<T> = Readable | Writable | Transform | Iter<T> | IStreamObject<T>
 
 interface IReadStreamOptions<T> {
   next: (chunk: T) => void
@@ -22,23 +23,25 @@ interface IReadStreamOptions<T> {
   complete?: () => void
 }
 
-interface IStreamObject<T> {
+interface IStreamObject<T> extends AsyncIterable<T> {
   read(options: IReadStreamOptions<T>): void
   toPromise(): Promise<T>
   toArray(): Promise<T[]>
   filter(callback: TFilterCallback<T>): IStreamObject<T>
   map<R = T>(callback: TMapCallback<T, R | Promise<R>>): IStreamObject<R>
   tap(callback: TTapCallback<T>): IStreamObject<T>
-  reduce<A = T>(callback: TReduceCallback<A, T>, initialValue: A): IStreamObject<A>
+  reduce<A = T>(callback: TReduceCallback<A, T>, initialValue?: A): IStreamObject<A>
   skip(num: number): IStreamObject<T>
   take(num: number): IStreamObject<T>
   parallel(num: number): IStreamObject<T>
   bufferCount(num: number): IStreamObject<T[]>
-  mergeAll(): IStreamObject<T extends Iter<infer K> ? K : any>
+  mergeAll(): IStreamObject<T extends CanBeStream<infer K> ? K : never>
+  concatAll(): IStreamObject<T extends CanBeStream<infer K> ? K : never>
   delay(ms: number): IStreamObject<T>
   copy(count: number): IStreamObject<T>[]
   split(delimiter: string): IStreamObject<string>
   buffer(callback: TFilterCallback<T>): IStreamObject<T[]>
+  finalize(callback: () => any): IStreamObject<T>
 }
 
 class ObjectModeTransform extends Transform {
@@ -71,12 +74,28 @@ export class StreamObject<T = any> implements IStreamObject<T> {
     }
   }
 
-  static from<T>(
-    ...iter: (Readable | Writable | Transform | Iter<T>)[]
+  async *[Symbol.asyncIterator]() {
+    for await (const data of this.toStream() as AsyncIterable<T>) {
+      yield data
+    }
+  }
+
+  static from<T>(stream: CanBeStream<T>): IStreamObject<T> {
+    if (stream instanceof StreamObject) {
+      return stream as IStreamObject<T>
+    }
+
+    return new StreamObject(stream)
+  }
+
+  static merge<T>(...streams: CanBeStream<T>[]): IStreamObject<T> {
+    return StreamObject.from(streams).mergeAll()
+  }
+
+  static concat<T>(
+    ...streams: (Readable | Writable | Transform | Iter<T> | IStreamObject<T>)[]
   ): IStreamObject<T> {
-    return iter.length === 1
-      ? new StreamObject(iter[0])
-      : new StreamObject(mergeStreams(...iter))
+    return StreamObject.from(streams).concatAll()
   }
 
   private pipe<R = T>(stream: Writable | Transform): IStreamObject<R> {
@@ -84,10 +103,19 @@ export class StreamObject<T = any> implements IStreamObject<T> {
     return this as unknown as StreamObject<R>
   }
 
-  read({ next, error = nullFunction, complete = nullFunction }: IReadStreamOptions<T>) {
+  private toStream() {
     const stream = this.stream.length
-      ? pipeline(this.source as any, ...(this.stream as any), nullFunction)
+      ? pipeline(
+          this.source as any,
+          ...(this.stream as any),
+          (err) => err && stream.emit('error', err)
+        )
       : this.source
+    return stream
+  }
+
+  read({ next, error = nullFunction, complete = nullFunction }: IReadStreamOptions<T>) {
+    const stream = this.toStream()
 
     stream.on('data', next)
     stream.on('error', error)
@@ -135,19 +163,33 @@ export class StreamObject<T = any> implements IStreamObject<T> {
   }
 
   map<R = T>(callback: TMapCallback<T, R | Promise<R>>) {
-    const co = this.concurrency
-    return this.pipe<R>(
-      co
-        ? parallelStream<T, R>(co, callback)
-        : mapStream<T, R>(callback as TMapCallback<T, R>)
-    )
+    if (!this.concurrency) {
+      return this.pipe<R>(mapStream(callback))
+    }
+
+    const pass = new ObjectModePassThrough()
+    this.read({
+      next(data) {
+        pass.push(data)
+      },
+      error(error: Error) {
+        pass.destroy(error)
+      },
+      complete() {
+        pass.end()
+      }
+    })
+
+    return (StreamObject.from<T>(pass) as StreamObject)
+      .pipe(parallelStream(this.concurrency, callback))
+      .parallel(this.concurrency)
   }
 
   tap(callback: TTapCallback<T>) {
     return this.pipe(tapStream<T>(callback))
   }
 
-  reduce<A = T>(callback: TReduceCallback<A, T>, initialValue: A) {
+  reduce<A = T>(callback: TReduceCallback<A, T>, initialValue?: A) {
     return this.pipe<A>(reduceStream<A, T>(callback, initialValue))
   }
 
@@ -165,11 +207,25 @@ export class StreamObject<T = any> implements IStreamObject<T> {
   }
 
   bufferCount(num: number): IStreamObject<T[]> {
-    return this.pipe(bufferCount(num)) as unknown as IStreamObject<T[]>
+    return this.pipe<T[]>(bufferCount(num))
   }
 
-  mergeAll(): IStreamObject<T extends Iter<infer K> ? K : any> {
-    return this.pipe(mergeAll())
+  mergeAll(): IStreamObject<T extends CanBeStream<infer K> ? K : never> {
+    const pass = new ObjectModePassThrough()
+    this.read({
+      next(data) {
+        pass.push(data)
+      },
+      error(error: Error) {
+        pass.destroy(error)
+      },
+      complete() {
+        pass.end()
+      }
+    })
+    return (StreamObject.from(pass) as StreamObject)
+      .pipe(mergeAllStream())
+      .parallel(this.concurrency)
   }
 
   delay(ms: number): IStreamObject<T> {
@@ -182,8 +238,8 @@ export class StreamObject<T = any> implements IStreamObject<T> {
       next(chunk) {
         copied.forEach((e) => e.push(chunk))
       },
-      error(error) {
-        copied.forEach((e) => e.emit('error', error))
+      error(error: Error) {
+        copied.forEach((e) => e.destroy(error))
       },
       complete() {
         copied.forEach((e) => e.end())
@@ -200,18 +256,14 @@ export class StreamObject<T = any> implements IStreamObject<T> {
   buffer(callback: TFilterCallback<T>) {
     return this.pipe<T[]>(bufferStream<T>(callback))
   }
-}
 
-const mergeStreams = <T = any>(
-  ...streams: (Readable | Writable | Transform | Iter<T>)[]
-) => {
-  return (async function* () {
-    for (const stream of streams) {
-      for await (const e of stream as AsyncIterable<T>) {
-        yield e
-      }
-    }
-  })()
+  concatAll(): IStreamObject<T extends CanBeStream<infer K> ? K : never> {
+    return this.pipe(concatAllStream())
+  }
+
+  finalize(callback: () => any): IStreamObject<T> {
+    return this.pipe(finalizeStream(callback))
+  }
 }
 
 const filterStream = <T>(callback: TFilterCallback<T>) => {
@@ -246,7 +298,7 @@ const tapStream = <T>(callback: TTapCallback<T>) => {
   })
 }
 
-const reduceStream = <A, C>(callback: TReduceCallback<A, C>, initialValue: A) => {
+const reduceStream = <A, C>(callback: TReduceCallback<A, C>, initialValue?: A) => {
   let index = 0
 
   return new ObjectModeTransform({
@@ -304,7 +356,7 @@ const takeStream = (num: number) => {
       if (index <= num) {
         next(null, chunk)
       } else {
-        this.emit('end')
+        this.end()
       }
     }
   })
@@ -328,40 +380,45 @@ const bufferCount = (num: number) => {
   })
 }
 
-const mergeAll = <T>() => {
-  const transform = new ObjectModeTransform({
-    async transform(chunk, _, next) {
-      switch (true) {
-        case chunk instanceof StreamObject:
-          chunk.read({
-            next(chunk: T) {
-              transform.push(chunk)
-            },
-            error(error: any) {
-              transform.emit('error', error)
-            },
-            complete() {
-              next()
-            }
-          })
-          return
-
-        case typeof chunk[Symbol.asyncIterator] === 'function':
-        case typeof chunk[Symbol.iterator] === 'function':
-          for await (const c of chunk) {
-            this.push(c)
-          }
-          next()
-          return
-        case chunk instanceof Promise:
-          next(null, await chunk)
-        default:
-          next()
-          return
+const mergeAllStream = () => {
+  let running = 0
+  const event = new EventEmitter()
+  const is_done = new Promise((resolve) => {
+    event.on('done', () => {
+      if (running > 1) {
+        running--
+        return
       }
+
+      event.removeAllListeners()
+      resolve(null)
+    })
+  })
+
+  return new ObjectModeTransform({
+    transform(chunk, _, next) {
+      StreamObject.from(chunk)
+        .tap((e) => this.push(e))
+        .toPromise()
+        .then(() => event.emit('done'))
+      next()
+    },
+    async flush(next) {
+      await is_done
+      next()
     }
   })
-  return transform
+}
+
+const concatAllStream = () => {
+  return new ObjectModeTransform({
+    async transform(chunk, _, next) {
+      for await (const e of chunk) {
+        this.push(e)
+      }
+      next()
+    }
+  })
 }
 
 const delayStream = (ms: number) => {
@@ -379,44 +436,47 @@ const parallelStream = function <T, R>(
 ) {
   let index = 0
   let running = 0
+  let is_empty = true
   const queue: internal.TransformCallback[] = []
   const event = new EventEmitter()
-  const wait = new Promise((resolve) => {
+  const is_done = new Promise((resolve) => {
     event.on('done', () => {
-      running--
-      while (queue.length && running < concurrency) {
-        const done = queue.shift()
-        done()
-      }
-      if (running > 0) {
+      if (running > 0 || queue.length > 0) {
         return
       }
+
+      event.removeAllListeners()
       resolve(null)
     })
   })
 
   return new ObjectModeTransform({
     async flush(next) {
-      await wait
+      if (is_empty) {
+        return next()
+      }
+
+      await is_done
       next()
     },
     transform(chunk, _, next) {
-      index++
+      if (is_empty) {
+        is_empty = false
+      }
+
       running++
       try {
-        const processed = callback(chunk, index - 1)
-
-        const promise =
-          processed instanceof Promise
-            ? processed
-            : new Promise((resolve) => resolve(processed))
-
-        promise
+        Promise.resolve(callback(chunk, index++))
           .then((data) => {
             this.push(data)
+            running--
+            while (queue.length && running < concurrency) {
+              const done = queue.shift()
+              done()
+            }
             event.emit('done')
           })
-          .catch((err) => this.emit('error', err))
+          .catch((err) => this.destroy(err))
 
         if (running >= concurrency) {
           queue.push(next)
@@ -445,7 +505,7 @@ const splitStream = (delimiter: string) => {
       done()
     },
     flush(done) {
-      this.push(temp)
+      temp && this.push(temp)
       done()
     }
   })
@@ -456,10 +516,9 @@ const bufferStream = <T>(callback: TFilterCallback<T>) => {
   let index = 0
   return new ObjectModeTransform({
     transform(chunk: T, _, next) {
-      index++
       buffered.push(chunk)
       try {
-        if (callback(chunk, index - 1)) {
+        if (callback(chunk, index++)) {
           this.push(buffered)
           buffered = []
         }
@@ -472,6 +531,15 @@ const bufferStream = <T>(callback: TFilterCallback<T>) => {
       if (buffered.length) {
         this.push(buffered)
       }
+      next()
+    }
+  })
+}
+
+const finalizeStream = (callback: () => any) => {
+  return new ObjectModePassThrough({
+    async final(next) {
+      await callback()
       next()
     }
   })
